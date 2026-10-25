@@ -1,0 +1,17 @@
+{
+  "name": "umidade-esp32",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Dashboard de umidade do solo com ESP32 + sensor resistivo",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "simulate": "node simulate.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

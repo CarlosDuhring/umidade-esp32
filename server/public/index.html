@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Umidade do Solo · ESP32</title>
+    <link rel="stylesheet" href="/style.css" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
+    <script src="/app.js" defer></script>
+  </head>
+  <body>
+    <main class="wrap">
+      <header class="top">
+        <div>
+          <h1>Umidade do Solo</h1>
+          <p class="sub">ESP32 + sensor resistivo <span id="device"></span></p>
+        </div>
+        <span id="pill" class="pill is-offline">Carregando…</span>
+      </header>
+
+      <section class="grid">
+        <article class="card hero">
+          <p class="label">Umidade atual</p>
+          <p class="big"><span id="percent">--</span><small>%</small></p>
+          <div class="bar"><i id="bar"></i></div>
+          <p class="advice" id="advice">Aguardando a primeira leitura…</p>
+        </article>
+
+        <article class="card">
+          <p class="label">Status</p>
+          <p class="status" id="statusLabel">--</p>
+          <dl class="meta">
+            <div><dt>Última leitura</dt><dd id="lastUpdate">--</dd></div>
+            <div><dt>Sinal WiFi</dt><dd id="rssi">--</dd></div>
+            <div><dt>ADC bruto</dt><dd id="adc">--</dd></div>
+            <div><dt>Faixa calibrada</dt><dd id="cal">--</dd></div>
+          </dl>
+        </article>
+      </section>
+
+      <section class="card chart-card">
+        <div class="chart-head">
+          <div>
+            <p class="label">Histórico</p>
+            <p class="sub">Leituras mais recentes</p>
+          </div>
+          <button id="refresh" class="btn" type="button">Atualizar</button>
+        </div>
+        <canvas id="chart" height="150"></canvas>
+        <p class="empty" id="empty">Sem leituras ainda. Ligue o ESP32.</p>
+      </section>
+
+      <footer>
+        <span id="updated">--</span> · atualiza a cada 5 s ·
+        <a href="/api/status" target="_blank" rel="noreferrer">API</a>
+      </footer>
+    </main>
+  </body>
+</html>

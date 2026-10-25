@@ -1,0 +1,19 @@
+services:
+  - type: web
+    name: umidade-esp32
+    runtime: node
+    rootDir: server
+    plan: free
+    buildCommand: npm install
+    startCommand: npm start
+    envVars:
+      - key: API_KEY
+        sync: false
+      - key: UMIDADE_MIN
+        value: "35"
+      - key: UMIDADE_CRITICA
+        value: "20"
+      - key: CAL_SECO
+        value: "3000"
+      - key: CAL_UMIDO
+        value: "1200"
