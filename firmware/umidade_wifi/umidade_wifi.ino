@@ -31,15 +31,29 @@ const unsigned long INTERVALO_RECONEXAO = 15000;
 unsigned long ultimoEnvio = 0;
 
 // ------------------------------------------------------------
-// Media de varias leituras para reduzir ruido
+// Mediana de 31 leituras: ignora picos de contato e ruido do ADC
 // ------------------------------------------------------------
-int lerAdcMedia(uint8_t amostras = 16) {
-  long soma = 0;
+int lerAdcMediana(uint8_t amostras = 31) {
+  int valores[31];
+  if (amostras > 31) amostras = 31;
+
   for (uint8_t i = 0; i < amostras; i++) {
-    soma += analogRead(PINO_SENSOR);
-    delay(5);
+    valores[i] = analogRead(PINO_SENSOR);
+    delay(4);
   }
-  return (int)(soma / amostras);
+
+  // ordenacao por insercao (lista pequena)
+  for (uint8_t i = 1; i < amostras; i++) {
+    int atual = valores[i];
+    int j = i - 1;
+    while (j >= 0 && valores[j] > atual) {
+      valores[j + 1] = valores[j];
+      j--;
+    }
+    valores[j + 1] = atual;
+  }
+
+  return valores[amostras / 2];
 }
 
 // ------------------------------------------------------------
@@ -140,7 +154,7 @@ void setup() {
   Serial.printf("Servidor: %s\n", SERVIDOR_URL);
 
   conectarWifi();
-  enviarLeitura(lerAdcMedia());
+  enviarLeitura(lerAdcMediana());
   ultimoEnvio = millis();
 }
 
@@ -158,7 +172,7 @@ void loop() {
   if (millis() - ultimoEnvio >= INTERVALO_ENVIO) {
     ultimoEnvio = millis();
 
-    int adc = lerAdcMedia();
+    int adc = lerAdcMediana();
     Serial.printf("ADC: %d\n", adc);
 
     bool ok = enviarLeitura(adc);

@@ -41,6 +41,10 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 let readings = carregar();
 
+// Suaviza a leitura: solo muda devagar, entao uma media exponencial evita o
+// numero pular por causa de ruido do ADC ou de um pico de contato.
+let emaPercent = readings.length ? readings[readings.length - 1].percent : null;
+
 function carregar() {
   try {
     const bruto = fs.readFileSync(DATA_FILE, 'utf8');
@@ -69,8 +73,17 @@ function adcParaPorcentagem(adc) {
   return Math.max(0, Math.min(100, Math.round(pct)));
 }
 
-function classificar(porcentagem, idadeMs) {
-  if (idadeMs > CONFIG.offlineMs) {
+// Media exponencial: 30% da leitura nova, 70% do historico.
+function suavizar(porcentagemBruta) {
+  if (emaPercent === null) {
+    emaPercent = porcentagemBruta;
+  } else {
+    emaPercent = emaPercent * 0.7 + porcentagemBruta * 0.3;
+  }
+  return Math.round(Math.max(0, Math.min(100, emaPercent)));
+}
+
+function classificar(porcentagem, idadeMs) {  if (idadeMs > CONFIG.offlineMs) {
     return {
       level: 'offline',
       label: 'Sem sinal',
@@ -112,11 +125,13 @@ app.post('/api/readings', (req, res) => {
     return res.status(400).json({ erro: 'adc deve ser um numero entre 0 e 4095' });
   }
 
-  const porcentagem = adcParaPorcentagem(adc);
+  const porcentagemBruta = adcParaPorcentagem(adc);
+  const porcentagem = suavizar(porcentagemBruta);
   const leitura = {
     ts: Date.now(),
     adc: Math.round(adc),
     percent: porcentagem,
+    percentRaw: porcentagemBruta,
     device: String(corpo.device || 'esp32').slice(0, 40),
     rssi: Number.isFinite(Number(corpo.rssi)) ? Number(corpo.rssi) : null,
   };
@@ -129,7 +144,7 @@ app.post('/api/readings', (req, res) => {
 
   console.log(
     `[${new Date(leitura.ts).toLocaleTimeString('pt-BR')}] ${leitura.device} ` +
-    `adc=${leitura.adc} -> ${leitura.percent}% (${classificar(leitura.percent, 0).label})`
+    `adc=${leitura.adc} -> bruto ${leitura.percentRaw}% / suave ${leitura.percent}% (${classificar(leitura.percent, 0).label})`
   );
 
   res.json({ ok: true, leitura, status: classificar(leitura.percent, 0) });
@@ -151,7 +166,7 @@ app.get('/api/status', (req, res) => {
       : { level: 'offline', label: 'Sem dados', advice: 'Ligue o ESP32 para comecar.' },
     thresholds: { min: CONFIG.min, critical: CONFIG.critical },
     calibration: { seco: CONFIG.calSeco, umido: CONFIG.calUmido },
-    history: readings.slice(-limite).map((r) => ({ ts: r.ts, percent: r.percent })),
+    history: readings.slice(-limite).map((r) => ({ ts: r.ts, percent: r.percent, adc: r.adc })),
   });
 });
 
