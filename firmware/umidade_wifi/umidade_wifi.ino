@@ -31,15 +31,17 @@ const unsigned long INTERVALO_RECONEXAO = 15000;
 unsigned long ultimoEnvio = 0;
 
 // ------------------------------------------------------------
-// Mediana de 31 leituras: ignora picos de contato e ruido do ADC
+// Leitura estavel: 31 amostras, descarta as 5 maiores e as 5 menores
+// e faz a media das 21 do meio (corta picos e reduz ruido)
 // ------------------------------------------------------------
-int lerAdcMediana(uint8_t amostras = 31) {
+int lerAdcEstavel(uint8_t amostras = 31) {
   int valores[31];
   if (amostras > 31) amostras = 31;
+  if (amostras < 11) amostras = 11;
 
   for (uint8_t i = 0; i < amostras; i++) {
     valores[i] = analogRead(PINO_SENSOR);
-    delay(4);
+    delay(3);
   }
 
   // ordenacao por insercao (lista pequena)
@@ -53,7 +55,15 @@ int lerAdcMediana(uint8_t amostras = 31) {
     valores[j + 1] = atual;
   }
 
-  return valores[amostras / 2];
+  uint8_t corte = amostras / 6;  // 5 de 31
+  long soma = 0;
+  uint8_t n = 0;
+  for (uint8_t i = corte; i < amostras - corte; i++) {
+    soma += valores[i];
+    n++;
+  }
+
+  return (int)(soma / n);
 }
 
 // ------------------------------------------------------------
@@ -154,7 +164,7 @@ void setup() {
   Serial.printf("Servidor: %s\n", SERVIDOR_URL);
 
   conectarWifi();
-  enviarLeitura(lerAdcMediana());
+  enviarLeitura(lerAdcEstavel());
   ultimoEnvio = millis();
 }
 
@@ -172,7 +182,7 @@ void loop() {
   if (millis() - ultimoEnvio >= INTERVALO_ENVIO) {
     ultimoEnvio = millis();
 
-    int adc = lerAdcMediana();
+    int adc = lerAdcEstavel();
     Serial.printf("ADC: %d\n", adc);
 
     bool ok = enviarLeitura(adc);

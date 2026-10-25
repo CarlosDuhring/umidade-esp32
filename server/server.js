@@ -41,9 +41,23 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 let readings = carregar();
 
-// Suaviza a leitura: solo muda devagar, entao uma media exponencial evita o
-// numero pular por causa de ruido do ADC ou de um pico de contato.
-let emaPercent = readings.length ? readings[readings.length - 1].percent : null;
+// Mediana das 3 ultimas leituras brutas: corta pico de contato sem segurar a
+// resposta (a media exponencial anterior levava ~5 leituras para chegar no valor).
+const recentes = readings.slice(-3).map((r) => (r.percentRaw ?? r.percent));
+
+function suavizar(porcentagemBruta) {
+  const anterior = recentes.length ? recentes[recentes.length - 1] : porcentagemBruta;
+
+  recentes.push(porcentagemBruta);
+  if (recentes.length > 3) recentes.shift();
+
+  // Mudanca grande (sensor entrou/saiu do vaso): responde na hora,
+  // sem esperar as 3 leituras.
+  if (Math.abs(porcentagemBruta - anterior) >= 12) return porcentagemBruta;
+
+  const ordenado = [...recentes].sort((a, b) => a - b);
+  return Math.round(ordenado[Math.floor(ordenado.length / 2)]);
+}
 
 function carregar() {
   try {
@@ -71,16 +85,6 @@ function adcParaPorcentagem(adc) {
   if (calSeco === calUmido) return 0;
   const pct = ((adc - calSeco) / (calUmido - calSeco)) * 100;
   return Math.max(0, Math.min(100, Math.round(pct)));
-}
-
-// Media exponencial: 30% da leitura nova, 70% do historico.
-function suavizar(porcentagemBruta) {
-  if (emaPercent === null) {
-    emaPercent = porcentagemBruta;
-  } else {
-    emaPercent = emaPercent * 0.7 + porcentagemBruta * 0.3;
-  }
-  return Math.round(Math.max(0, Math.min(100, emaPercent)));
 }
 
 function classificar(porcentagem, idadeMs) {  if (idadeMs > CONFIG.offlineMs) {

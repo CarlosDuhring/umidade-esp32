@@ -159,6 +159,8 @@ h1 {
 .chart-box {
   position: relative;
   height: 300px;
+  max-height: 300px;
+  overflow: hidden;
   margin-top: 8px;
 }
 

@@ -3,6 +3,7 @@ const $ = (id) => document.getElementById(id);
 const INTERVALO_MS = 5000;
 let grafico = null;
 let graficoVisivel = false;
+let ultimaLeituraTs = null;
 
 const CORES = {
   ok: '#16a34a',
@@ -13,12 +14,12 @@ const CORES = {
 
 function tempoRelativo(ts) {
   if (!ts) return '--';
-  const s = Math.max(0, Math.round((Date.now() - ts) / 1000));
+  const s = Math.max(0, Math.floor((Date.now() - ts) / 1000));
   if (s < 5) return 'agora';
   if (s < 60) return `há ${s} s`;
-  const min = Math.round(s / 60);
+  const min = Math.floor(s / 60);
   if (min < 60) return `há ${min} min`;
-  const h = Math.round(min / 60);
+  const h = Math.floor(min / 60);
   return `há ${h} h`;
 }
 
@@ -28,6 +29,11 @@ function horaCurta(ts) {
     minute: '2-digit',
     second: '2-digit',
   });
+}
+
+function atualizarRelogio() {
+  if (!ultimaLeituraTs) return;
+  $('lastUpdate').textContent = `${horaCurta(ultimaLeituraTs)} · ${tempoRelativo(ultimaLeituraTs)}`;
 }
 
 function pintarBarra(percentual, nivel) {
@@ -147,7 +153,8 @@ async function atualizar() {
       $('adc').textContent = latest.adc;
       $('rssi').textContent = latest.rssi == null ? '--' : `${latest.rssi} dBm`;
       $('lastUpdate').textContent = tempoRelativo(latest.ts);
-      window.__ultimoTs = latest.ts;
+      ultimaLeituraTs = latest.ts;
+      atualizarRelogio();
       $('device').textContent = latest.device ? `· ${latest.device}` : '';
       document.title = `${latest.percent}% · Umidade do Solo`;
     } else {
@@ -161,7 +168,7 @@ async function atualizar() {
     pintarBarra(latest ? latest.percent : 0, status.level);
     desenharGrafico(history);
 
-    $('updated').textContent = `Atualizado ${new Date().toLocaleTimeString('pt-BR')}`;
+    $('updated').textContent = `Atualizado às ${horaCurta(Date.now())}`;
   } catch (erro) {
     console.error('Falha ao buscar dados:', erro);
     pintarPill('offline', 'Servidor fora');
@@ -174,11 +181,5 @@ $('refresh').addEventListener('click', atualizar);
 atualizar();
 setInterval(atualizar, INTERVALO_MS);
 
-// Atualiza os textos "há X s" sem bater no servidor
-setInterval(() => {
-  const texto = $('lastUpdate').textContent;
-  if (texto && texto !== '--') {
-    // re-render leve: pega o timestamp guardado no último fetch
-    if (window.__ultimoTs) $('lastUpdate').textContent = tempoRelativo(window.__ultimoTs);
-  }
-}, 1000);
+// Atualiza o relogio a cada segundo sem bater no servidor
+setInterval(atualizarRelogio, 1000);
