@@ -32,8 +32,10 @@ umidade-esp32/
 
 ## 2. Firmware (já gravado neste PC)
 
-O firmware já foi compilado e enviado para o ESP32 em **COM6** (ESP32-D0WD-V3), com a
-rede configurada no `secrets.h` e a URL `http://192.168.1.17:3000/api/readings`.
+**Site publicado:** <https://umidade-esp32.onrender.com>
+
+O firmware já foi compilado e enviado para o ESP32 em **COM6** (ESP32-D0WD-V3), já
+apontando para a URL do Render.
 
 Para regravar depois de mudar algo:
 
@@ -96,7 +98,10 @@ $env:API_KEY="minha-chave"; $env:PORT="3000"; npm start
 
 ## 4. Publicar no Render
 
-1. Suba esta pasta para um repositório no GitHub.
+**Já publicado:** <https://umidade-esp32.onrender.com> (serviço `umidade-esp32`, plano free).
+O `render.yaml` do repositório define `rootDir: server`, `npm install` e `npm start`.
+
+Para publicar do zero ou republicar:
 2. No Render: **New → Blueprint** (ou **Web Service**) apontando para o repositório.
    O `render.yaml` já define `rootDir: server`, `npm install` e `npm start`.
 3. Em **Environment**, defina `API_KEY` com a mesma chave do `secrets.h`.
