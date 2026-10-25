@@ -25,7 +25,7 @@
 const int PINO_SENSOR = 34;   // ADC1 - funciona junto com o WiFi
 const int LED_STATUS = 2;     // LED azul da placa (GPIO 2)
 
-const unsigned long INTERVALO_ENVIO = 60000;    // 1 leitura por minuto
+const unsigned long INTERVALO_ENVIO = 10000;    // 1 leitura a cada 10 s
 const unsigned long INTERVALO_RECONEXAO = 15000;
 
 unsigned long ultimoEnvio = 0;
