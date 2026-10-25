@@ -93,8 +93,8 @@ bool enviarLeitura(int adc) {
   WiFiClient clienteSimples;
   WiFiClientSecure clienteSeguro;
 
-  http.setConnectTimeout(15000);
-  http.setTimeout(15000);
+  http.setConnectTimeout(30000);
+  http.setTimeout(30000);
 
   bool iniciou;
   if (url.startsWith("https://")) {
