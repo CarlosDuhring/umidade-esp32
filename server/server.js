@@ -10,8 +10,8 @@
     API_KEY           chave que o ESP32 manda no header x-api-key
     UMIDADE_MIN       abaixo disso = "atencao" (padrao 35)
     UMIDADE_CRITICA   abaixo disso = "precisa molhar" (padrao 20)
-    CAL_SECO          ADC com o sensor seco (padrao 3000)
-    CAL_UMIDO         ADC com o sensor na agua (padrao 1200)
+    CAL_SECO          ADC com o sensor seco (padrao 2500)
+    CAL_UMIDO         ADC com o sensor na agua (padrao 1250)
     OFFLINE_MS        tempo sem leitura para considerar offline (padrao 180000)
     DATA_DIR          pasta para salvar o historico (padrao ./data)
 */
@@ -27,8 +27,8 @@ const CONFIG = {
   apiKey: process.env.API_KEY || 'troque-esta-chave',
   min: Number(process.env.UMIDADE_MIN ?? 35),
   critical: Number(process.env.UMIDADE_CRITICA ?? 20),
-  calSeco: Number(process.env.CAL_SECO ?? 3000),
-  calUmido: Number(process.env.CAL_UMIDO ?? 1200),
+  calSeco: Number(process.env.CAL_SECO ?? 2500),
+  calUmido: Number(process.env.CAL_UMIDO ?? 1250),
   offlineMs: Number(process.env.OFFLINE_MS ?? 3 * 60 * 1000),
   maxHistory: 1000,
 };

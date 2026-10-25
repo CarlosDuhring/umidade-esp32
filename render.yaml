@@ -14,6 +14,6 @@ services:
       - key: UMIDADE_CRITICA
         value: "20"
       - key: CAL_SECO
-        value: "3000"
+        value: "2500"
       - key: CAL_UMIDO
-        value: "1200"
+        value: "1250"

@@ -86,8 +86,8 @@ npm run simulate
 | `API_KEY` | `troque-esta-chave` | chave que o ESP32 manda no header `x-api-key` |
 | `UMIDADE_MIN` | 35 | abaixo disso = **Atenção** |
 | `UMIDADE_CRITICA` | 20 | abaixo disso = **Precisa molhar** |
-| `CAL_SECO` | 3000 | ADC com o sensor seco |
-| `CAL_UMIDO` | 1200 | ADC com o sensor na água |
+| `CAL_SECO` | 2500 | ADC com o sensor seco |
+| `CAL_UMIDO` | 1250 | ADC com o sensor na água |
 | `OFFLINE_MS` | 180000 | tempo sem leitura para aparecer "Sem sinal" |
 
 Exemplo no PowerShell:
@@ -124,10 +124,14 @@ O servidor converte o ADC em %:
 ```
 
 Para calibrar:
-1. Abra o Monitor Serial (115200) e veja `ADC: ...` com o sensor **seco**.
-2. Anote o valor → `CAL_SECO`.
-3. Mergulhe o sensor na água → anote → `CAL_UMIDO`.
+1. Abra o Monitor Serial (115200) ou veja o campo **ADC bruto** no site.
+2. Com o sensor **no ar**, anote o valor → `CAL_SECO` (ar = 0%).
+3. Com o sensor em **solo encharcado**, anote → `CAL_UMIDO` (100%).
 4. Ajuste as variáveis no Render (ou no `$env:` local). Não precisa regravar o ESP32.
+
+> **Dedo não é referência!** Encostar nos dois garfos fecha o circuito e dá ~100% mesmo
+> sem água. O sensor mede condutividade entre as hastes — use solo de verdade para calibrar.
+> Valores atuais deste projeto: ar ≈ 2480 → 0%, dedo/água ≈ 1200-1300 → 100%.
 
 ## 6. API
 
