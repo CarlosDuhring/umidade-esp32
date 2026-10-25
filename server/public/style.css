@@ -154,6 +154,19 @@ h1 {
 
 .chart-card { margin-top: 16px; }
 
+/* altura fixa: o Chart.js precisa de um container com altura definida,
+   senao o canvas cresce a cada atualizacao */
+.chart-box {
+  position: relative;
+  height: 300px;
+  margin-top: 8px;
+}
+
+.chart-box canvas {
+  width: 100% !important;
+  height: 100% !important;
+}
+
 .chart-head {
   display: flex;
   align-items: center;

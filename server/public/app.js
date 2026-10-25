@@ -2,6 +2,7 @@ const $ = (id) => document.getElementById(id);
 
 const INTERVALO_MS = 5000;
 let grafico = null;
+let graficoVisivel = false;
 
 const CORES = {
   ok: '#16a34a',
@@ -25,6 +26,7 @@ function horaCurta(ts) {
   return new Date(ts).toLocaleTimeString('pt-BR', {
     hour: '2-digit',
     minute: '2-digit',
+    second: '2-digit',
   });
 }
 
@@ -41,17 +43,23 @@ function pintarPill(nivel, texto) {
 }
 
 function desenharGrafico(historico) {
-  const canvas = $('chart');
+  const caixa = $('chartBox');
   const vazio = $('empty');
 
   if (!historico.length) {
     vazio.hidden = false;
-    canvas.hidden = true;
+    caixa.hidden = true;
+    graficoVisivel = false;
     return;
   }
 
   vazio.hidden = true;
-  canvas.hidden = false;
+  caixa.hidden = false;
+
+  if (!graficoVisivel) {
+    graficoVisivel = true;
+    if (grafico) grafico.resize();
+  }
 
   if (typeof Chart === 'undefined') {
     vazio.hidden = false;
@@ -69,7 +77,7 @@ function desenharGrafico(historico) {
     return;
   }
 
-  grafico = new Chart(canvas, {
+  grafico = new Chart($('chart'), {
     type: 'line',
     data: {
       labels,
@@ -108,7 +116,13 @@ function desenharGrafico(historico) {
         },
         x: {
           grid: { display: false },
-          ticks: { maxTicksLimit: 8, color: '#5f7369' },
+          ticks: {
+            maxTicksLimit: 7,
+            maxRotation: 0,
+            autoSkip: true,
+            color: '#5f7369',
+            font: { size: 10 },
+          },
         },
       },
     },
@@ -148,7 +162,6 @@ async function atualizar() {
     desenharGrafico(history);
 
     $('updated').textContent = `Atualizado ${new Date().toLocaleTimeString('pt-BR')}`;
-    $('empty').hidden = history.length > 0;
   } catch (erro) {
     console.error('Falha ao buscar dados:', erro);
     pintarPill('offline', 'Servidor fora');
