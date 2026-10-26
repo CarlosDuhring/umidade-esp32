@@ -46,17 +46,12 @@ let readings = carregar();
 const recentes = readings.slice(-3).map((r) => (r.percentRaw ?? r.percent));
 
 function suavizar(porcentagemBruta) {
-  const anterior = recentes.length ? recentes[recentes.length - 1] : porcentagemBruta;
-
   recentes.push(porcentagemBruta);
   if (recentes.length > 3) recentes.shift();
 
-  // Mudanca grande (sensor entrou/saiu do vaso): responde na hora,
-  // sem esperar as 3 leituras.
-  if (Math.abs(porcentagemBruta - anterior) >= 12) return porcentagemBruta;
-
+  // Mediana sempre: um pico isolado (ex.: encostar no sensor) nao aparece.
   const ordenado = [...recentes].sort((a, b) => a - b);
-  return Math.round(ordenado[Math.floor(ordenado.length / 2)]);
+  return Math.round(ordenado[Math.floor((ordenado.length - 1) / 2)]);
 }
 
 function carregar() {

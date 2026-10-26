@@ -77,27 +77,34 @@ void piscar(int vezes, int pausaMs = 120) {
 }
 
 // ------------------------------------------------------------
-bool conectarWifi(unsigned long timeoutMs = 20000) {
+bool conectarWifi(unsigned long timeoutPorRede = 15000) {
   if (WiFi.status() == WL_CONNECTED) return true;
 
-  Serial.printf("Conectando em \"%s\" ", WIFI_SSID);
   WiFi.mode(WIFI_STA);
-  WiFi.begin(WIFI_SSID, WIFI_SENHA);
 
-  unsigned long inicio = millis();
-  while (WiFi.status() != WL_CONNECTED && millis() - inicio < timeoutMs) {
-    delay(500);
-    Serial.print(".");
+  for (uint8_t i = 0; i < TOTAL_REDES_WIFI; i++) {
+    Serial.printf("Tentando \"%s\" ", REDES_WIFI[i].ssid);
+    WiFi.begin(REDES_WIFI[i].ssid, REDES_WIFI[i].senha);
+
+    unsigned long inicio = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - inicio < timeoutPorRede) {
+      delay(500);
+      Serial.print(".");
+    }
+    Serial.println();
+
+    if (WiFi.status() == WL_CONNECTED) {
+      Serial.print("WiFi OK - IP: ");
+      Serial.println(WiFi.localIP());
+      return true;
+    }
+
+    Serial.println("  nao achou/nao conectou");
+    WiFi.disconnect(true, false);
+    delay(300);
   }
-  Serial.println();
 
-  if (WiFi.status() == WL_CONNECTED) {
-    Serial.print("WiFi OK - IP: ");
-    Serial.println(WiFi.localIP());
-    return true;
-  }
-
-  Serial.println("Nao conectou. Vou tentar de novo no proximo ciclo.");
+  Serial.println("Nenhuma rede conhecida disponivel. Tento de novo em instantes.");
   return false;
 }
 
