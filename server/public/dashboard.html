@@ -15,7 +15,7 @@
     <header class="app-header">
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
       <nav class="app-nav" aria-label="Navegação"><a class="is-current" href="/dashboard.html">Meus vasos</a><a href="/#demo">Demonstração</a></nav>
-      <div class="account-tools"><span id="accountName" class="account-name">Conta</span><button id="signOut" class="button button-quiet" type="button">Sair</button></div>
+      <div class="account-tools"><span id="accountName" class="account-name">Conta</span><button id="notificationSettings" class="button button-quiet" type="button">Alertas</button><button id="signOut" class="button button-quiet" type="button">Sair</button></div>
     </header>
     <main class="app-main">
       <section class="page-heading">
@@ -57,5 +57,6 @@
       </form>
     </dialog>
     <dialog id="historyDialog" class="dialog history-dialog"><div class="dialog-form"><div class="dialog-heading"><div><p class="eyebrow">ÚLTIMOS 30 DIAS</p><h2 id="historyTitle">Histórico</h2></div><button id="closeHistory" class="icon-button" type="button" aria-label="Fechar">×</button></div><div class="history-chart"><canvas id="historyChart"></canvas></div><div id="historyTable" class="history-table"></div></div></dialog>
+    <dialog id="notificationDialog" class="dialog"><form id="notificationForm" class="dialog-form"><div class="dialog-heading"><div><p class="eyebrow">PREFERÊNCIAS</p><h2>Alertas</h2></div><button id="closeNotifications" class="icon-button" type="button" aria-label="Fechar">×</button></div><label class="field">Repetir aviso de umidade baixa<select id="globalRepeat"><option value="6">A cada 6 horas</option><option value="12">A cada 12 horas</option><option value="24">Uma vez por dia</option><option value="48">A cada 2 dias</option><option value="168">Uma vez por semana</option></select></label><label class="check-row"><input id="notifyLow" type="checkbox" checked /> Aviso quando for hora de regar</label><label class="check-row"><input id="notifyNormal" type="checkbox" checked /> Aviso quando voltar ao normal</label><label class="check-row"><input id="notifyOffline" type="checkbox" checked /> Aviso quando um sensor ficar sem sinal</label><p class="field-note">Por enquanto, os avisos aparecem aqui no painel. WhatsApp e e-mail ainda não enviam mensagens.</p><p id="notificationMessage" class="form-message" role="status"></p><div class="dialog-actions"><button id="cancelNotifications" class="button button-quiet" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar preferências</button></div></form></dialog>
   </body>
 </html>

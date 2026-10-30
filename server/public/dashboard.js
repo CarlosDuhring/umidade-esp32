@@ -53,6 +53,16 @@ async function loadPlants() {
   await Promise.all([renderPlants(), loadAlerts()]);
 }
 
+async function loadNotificationPreferences() {
+  const { data, error } = await client.from('notification_preferences').select('*').eq('user_id', user.id).maybeSingle();
+  if (error) throw error;
+  if (!data) return;
+  $('notifyLow').checked = data.low_moisture_enabled;
+  $('notifyNormal').checked = data.normal_again_enabled;
+  $('notifyOffline').checked = data.sensor_offline_enabled;
+  $('globalRepeat').value = String(plants[0]?.alert_repeat_hours ?? 12);
+}
+
 async function loadAlerts() {
   const { data, error } = await client.from('alerts').select('id,plant_id,type,message,created_at,read_at')
     .eq('user_id', user.id).order('created_at', { ascending: false }).limit(20);
@@ -197,6 +207,36 @@ $('firstPlant').addEventListener('click', () => openPlant());
 $('closeDialog').addEventListener('click', () => $('plantDialog').close());
 $('cancelDialog').addEventListener('click', () => $('plantDialog').close());
 $('closeHistory').addEventListener('click', () => $('historyDialog').close());
+$('notificationSettings').addEventListener('click', async () => {
+  try {
+    await loadNotificationPreferences();
+    $('notificationDialog').showModal();
+  } catch (error) { message(error.message, 'is-error'); }
+});
+$('closeNotifications').addEventListener('click', () => $('notificationDialog').close());
+$('cancelNotifications').addEventListener('click', () => $('notificationDialog').close());
+$('notificationForm').addEventListener('submit', async (event) => {
+  event.preventDefault();
+  const repeat = Number($('globalRepeat').value);
+  try {
+    const { error: preferenceError } = await client.from('notification_preferences').upsert({
+      user_id: user.id,
+      low_moisture_enabled: $('notifyLow').checked,
+      normal_again_enabled: $('notifyNormal').checked,
+      sensor_offline_enabled: $('notifyOffline').checked,
+      updated_at: new Date().toISOString(),
+    });
+    if (preferenceError) throw preferenceError;
+    const { error: plantsError } = await client.from('plants').update({ alert_repeat_hours: repeat }).eq('user_id', user.id);
+    if (plantsError) throw plantsError;
+    plants = plants.map((plant) => ({ ...plant, alert_repeat_hours: repeat }));
+    $('notificationDialog').close();
+    message('Preferências de alerta salvas.', 'is-success');
+  } catch (error) {
+    $('notificationMessage').textContent = error.message || 'Não consegui salvar as preferências.';
+    $('notificationMessage').className = 'form-message is-error';
+  }
+});
 $('plantGrid').addEventListener('click', async (event) => {
   const button = event.target.closest('button[data-action]');
   if (!button) return;

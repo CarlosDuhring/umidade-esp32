@@ -104,6 +104,8 @@ h1, h2, h3, p { overflow-wrap: anywhere; }
 .field input[type=number] { width: 110px; }
 .field-inline { display: inline-flex; align-items: center; gap: 8px; }
 .field-note { margin: -5px 0 0; color: var(--stone); font-size: 12px; line-height: 1.45; }
+.check-row { display: flex; align-items: center; gap: 10px; color: var(--body); font-size: 13px; }
+.check-row input { width: 17px; height: 17px; accent-color: var(--leaf); }
 .form-message { min-height: 18px; margin: 0; color: var(--muted); font-size: 13px; line-height: 1.45; }
 .form-message.is-error { color: #963e30; }
 .form-message.is-success { color: #345038; }
