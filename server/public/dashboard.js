@@ -246,7 +246,7 @@ async function pairSensor(plant) {
   if (!response.ok) throw new Error(result.error || 'Não foi possível associar o sensor.');
   $('pairTitle').textContent = `Sensor de ${plant.name}`;
   $('deviceKeyValue').value = result.device_key;
-  $('deviceConfig').textContent = `#define SERVIDOR_URL "https://umidade-esp32.onrender.com/api/device/readings"\n#define DEVICE_KEY "${result.device_key}"`;
+  $('deviceConfig').textContent = `#define SERVIDOR_URL "${window.location.origin}/api/device/readings"\n#define DEVICE_KEY "${result.device_key}"`;
   $('pairMessage').textContent = 'Chave gerada. Copie e guarde antes de fechar; ela não será mostrada novamente.';
   $('pairDialog').showModal();
   message('Sensor associado. Falta configurar esta chave no firmware do ESP32.', 'is-success');
