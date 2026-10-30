@@ -17,7 +17,17 @@ function setStatus(status) {
 }
 
 function renderChart(history) {
-  if (typeof Chart === 'undefined' || !history.length) return;
+  const empty = $('demoChartEmpty');
+  if (!history.length) {
+    empty.hidden = false;
+    if (chart) {
+      chart.destroy();
+      chart = null;
+    }
+    return;
+  }
+  empty.hidden = true;
+  if (typeof Chart === 'undefined') return;
   const labels = history.map((item) => new Date(item.ts).toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit', second: '2-digit' }));
   const data = history.map((item) => item.percent);
   if (chart) {
