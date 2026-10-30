@@ -49,7 +49,7 @@ button { color: inherit; }
 .button-wide { width: 100%; }
 .hero { min-height: 520px; display: grid; grid-template-columns: 1.05fr .95fr; align-items: center; gap: 40px; padding-block: 44px 56px; }
 .hero-copy { max-width: 590px; }
-.eyebrow { margin: 0 0 14px; color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: .12em; }
+.eyebrow { margin: 0 0 14px; color: var(--muted); font-size: 11px; font-weight: 650; letter-spacing: 0; }
 h1, h2, h3, p { overflow-wrap: anywhere; }
 .hero h1 { max-width: 620px; margin: 0; color: var(--ink); font-size: 68px; line-height: .99; font-weight: 450; letter-spacing: 0; }
 .hero-copy > p:not(.eyebrow) { max-width: 475px; margin: 22px 0 26px; color: var(--body); font-size: 17px; line-height: 1.55; }

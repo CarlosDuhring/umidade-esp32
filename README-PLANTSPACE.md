@@ -13,11 +13,11 @@ The Render prototype remains the public live demonstration. The authenticated MV
    - `SUPABASE_ANON_KEY`: publishable/anon key (safe to use in the browser; database RLS remains mandatory).
    - `SUPABASE_SERVICE_ROLE_KEY`: service-role secret, server only. Never prefix it with a public/client variable name.
 
-The public landing page and ESP32 demo work without Supabase. Login, signup, and private data remain unavailable until the project keys and schema are configured.
+The public prototype readings are stored separately in `prototype_readings`, so the demo survives Render restarts without exposing private account data. Login, signup, and private data require the Supabase keys and migrations.
 
 ## MVP behavior
 
-- Public landing page shows the current Render prototype reading and its history.
+- Public landing page shows the current ESP32 prototype reading and its persisted history.
 - Signup asks for name, email, password, and international-format WhatsApp phone. WhatsApp delivery is not enabled in this MVP.
 - Users create plants with name, species, location, and a suggested, editable moisture threshold.
 - Private dashboard queries are scoped by authenticated user and reinforced with Supabase RLS.

@@ -231,7 +231,7 @@ function classificar(porcentagem, idadeMs) {
 // ---------------------------------------------------------------
 // ESP32 envia leituras aqui
 // ---------------------------------------------------------------
-app.post('/api/readings', (req, res) => {
+app.post('/api/readings', async (req, res) => {
   if (req.get('x-api-key') !== CONFIG.apiKey) {
     return res.status(401).json({ erro: 'chave de API invalida' });
   }
@@ -253,6 +253,21 @@ app.post('/api/readings', (req, res) => {
     rssi: Number.isFinite(Number(corpo.rssi)) ? Number(corpo.rssi) : null,
   };
 
+  const admin = supabaseAdmin();
+  if (admin) {
+    const { error } = await admin.from('prototype_readings').insert({
+      moisture_percent: leitura.percent,
+      adc: leitura.adc,
+      device: leitura.device,
+      rssi: leitura.rssi,
+      recorded_at: new Date(leitura.ts).toISOString(),
+    });
+    if (error) {
+      console.error('Prototype reading persistence failed:', error.message);
+      return res.status(503).json({ error: 'Nao foi possivel salvar a leitura demonstrativa.' });
+    }
+  }
+
   readings.push(leitura);
   if (readings.length > CONFIG.maxHistory) {
     readings = readings.slice(-CONFIG.maxHistory);
@@ -270,9 +285,29 @@ app.post('/api/readings', (req, res) => {
 // ---------------------------------------------------------------
 // O site consulta aqui
 // ---------------------------------------------------------------
-app.get('/api/status', (req, res) => {
+app.get('/api/status', async (req, res) => {
   const limite = Math.min(Number(req.query.limit) || 120, 500);
-  const ultima = readings[readings.length - 1] || null;
+  let source = readings;
+  const admin = supabaseAdmin();
+  if (admin) {
+    const { data, error } = await admin.from('prototype_readings')
+      .select('moisture_percent,adc,device,rssi,recorded_at')
+      .gte('recorded_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
+      .order('recorded_at', { ascending: true })
+      .limit(CONFIG.maxHistory);
+    if (error) {
+      console.error('Prototype history read failed:', error.message);
+      return res.status(503).json({ error: 'Historico demonstrativo indisponivel.' });
+    }
+    source = (data || []).map((row) => ({
+      ts: new Date(row.recorded_at).getTime(),
+      percent: row.moisture_percent,
+      adc: row.adc,
+      device: row.device,
+      rssi: row.rssi,
+    }));
+  }
+  const ultima = source[source.length - 1] || null;
   const idade = ultima ? Date.now() - ultima.ts : Infinity;
 
   res.json({
@@ -283,7 +318,7 @@ app.get('/api/status', (req, res) => {
       : { level: 'offline', label: 'Sem dados', advice: 'Ligue o ESP32 para comecar.' },
     thresholds: { min: CONFIG.min, critical: CONFIG.critical },
     calibration: { seco: CONFIG.calSeco, umido: CONFIG.calUmido },
-    history: readings.slice(-limite).map((r) => ({ ts: r.ts, percent: r.percent, adc: r.adc })),
+    history: source.slice(-limite).map((r) => ({ ts: r.ts, percent: r.percent, adc: r.adc })),
   });
 });
 

@@ -46,6 +46,23 @@ create table if not exists public.readings (
   recorded_at timestamptz not null default now()
 );
 
+create table if not exists public.prototype_readings (
+  id bigint generated always as identity primary key,
+  moisture_percent integer not null check (moisture_percent between 0 and 100),
+  adc integer not null check (adc between 0 and 4095),
+  device text not null default 'esp32-prototipo',
+  rssi integer,
+  recorded_at timestamptz not null default now()
+);
+
+alter table public.prototype_readings enable row level security;
+drop policy if exists "public can view prototype demo readings" on public.prototype_readings;
+create policy "public can view prototype demo readings" on public.prototype_readings
+  for select to anon, authenticated using (true);
+revoke all on public.prototype_readings from anon, authenticated;
+grant select on public.prototype_readings to anon, authenticated;
+create index if not exists prototype_readings_recorded_idx on public.prototype_readings(recorded_at desc);
+
 create index if not exists plants_user_created_idx on public.plants(user_id, created_at desc);
 create index if not exists readings_sensor_time_idx on public.readings(sensor_id, recorded_at desc);
 create index if not exists sensors_user_idx on public.sensors(user_id);
