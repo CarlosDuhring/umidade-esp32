@@ -270,12 +270,6 @@ $('plantBack').addEventListener('click', () => {
     updatePlantStep();
   }
 });
-$('plantForm').addEventListener('submit', (event) => {
-  if (plantStep < 3) {
-    event.preventDefault();
-    advancePlantStep();
-  }
-});
 $('closeHistory').addEventListener('click', () => $('historyDialog').close());
 $('closePair').addEventListener('click', () => $('pairDialog').close());
 $('donePair').addEventListener('click', () => $('pairDialog').close());

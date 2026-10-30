@@ -27,7 +27,7 @@ function setMode(mode) {
   document.getElementById('signupNavigation').hidden = !signup;
   document.getElementById('signupStepOne').hidden = !signup || signupStep !== 1;
   document.getElementById('signupStepTwo').hidden = !signup || signupStep !== 2;
-  document.getElementById('phoneNote').hidden = !signup;
+  document.getElementById('phoneNote').hidden = !signup || signupStep !== 1;
   document.getElementById('email').required = !signup;
   document.getElementById('password').required = !signup;
   submitButton.hidden = signup;
@@ -48,6 +48,7 @@ function updateSignupProgress() {
   document.getElementById('phone').required = signup && signupStep === 1;
   document.getElementById('signupEmail').required = signup && signupStep === 2;
   document.getElementById('signupPassword').required = signup && signupStep === 2;
+  document.getElementById('phoneNote').hidden = !signup || signupStep !== 1;
 }
 
 function nextSignupStep() {
