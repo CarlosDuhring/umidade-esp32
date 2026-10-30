@@ -30,6 +30,10 @@ function setMode(mode) {
   document.getElementById('phoneNote').hidden = !signup || signupStep !== 1;
   document.getElementById('email').required = !signup;
   document.getElementById('password').required = !signup;
+  document.getElementById('fullName').required = false;
+  document.getElementById('phone').required = false;
+  document.getElementById('signupEmail').required = false;
+  document.getElementById('signupPassword').required = false;
   submitButton.hidden = signup;
   updateSignupProgress();
   submitButton.textContent = 'Entrar';
@@ -49,6 +53,8 @@ function updateSignupProgress() {
   document.getElementById('signupEmail').required = signup && signupStep === 2;
   document.getElementById('signupPassword').required = signup && signupStep === 2;
   document.getElementById('phoneNote').hidden = !signup || signupStep !== 1;
+  document.getElementById('email').required = !signup;
+  document.getElementById('password').required = !signup;
 }
 
 function nextSignupStep() {

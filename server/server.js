@@ -128,9 +128,12 @@ app.post('/api/device/readings', async (req, res) => {
     await admin.from('sensors').update({ last_seen_at: reading.recorded_at }).eq('id', sensor.id);
 
     let alert = null;
+    const { data: preferences } = await admin.from('notification_preferences')
+      .select('low_moisture_enabled,normal_again_enabled')
+      .eq('user_id', sensor.user_id).maybeSingle();
     if (plant && percent < plant.threshold_percent) {
       const due = !plant.last_low_alert_at || Date.now() - new Date(plant.last_low_alert_at).getTime() >= plant.alert_repeat_hours * 3600000;
-      if (due) {
+      if (due && preferences?.low_moisture_enabled !== false) {
         alert = { type: 'low_moisture', plant_id: plant.id, moisture_percent: percent, created_at: reading.recorded_at };
         await admin.from('plants').update({ last_low_alert_at: reading.recorded_at }).eq('id', plant.id);
         await admin.from('alerts').insert({
@@ -142,15 +145,17 @@ app.post('/api/device/readings', async (req, res) => {
         });
       }
     } else if (plant?.last_low_alert_at) {
-      alert = { type: 'normal_again', plant_id: plant.id, moisture_percent: percent, created_at: reading.recorded_at };
       await admin.from('plants').update({ last_low_alert_at: null }).eq('id', plant.id);
-      await admin.from('alerts').insert({
-        user_id: sensor.user_id,
-        plant_id: plant.id,
-        type: alert.type,
-        moisture_percent: percent,
-        message: `Umidade normalizada: ${percent}%.`,
-      });
+      if (preferences?.normal_again_enabled !== false) {
+        alert = { type: 'normal_again', plant_id: plant.id, moisture_percent: percent, created_at: reading.recorded_at };
+        await admin.from('alerts').insert({
+          user_id: sensor.user_id,
+          plant_id: plant.id,
+          type: alert.type,
+          moisture_percent: percent,
+          message: `Umidade normalizada: ${percent}%.`,
+        });
+      }
     }
 
     res.status(201).json({ ok: true, reading, alert });

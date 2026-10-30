@@ -256,7 +256,7 @@ async function pairSensor(plant) {
 $('plantSpecies').addEventListener('change', (event) => {
   const custom = event.target.value === 'custom';
   $('customSpeciesField').hidden = !custom;
-  $('customSpecies').required = custom;
+  $('customSpecies').required = custom && plantStep === 2;
   setThresholdHint(event.target.value);
 });
 $('addPlant').addEventListener('click', () => openPlant());
