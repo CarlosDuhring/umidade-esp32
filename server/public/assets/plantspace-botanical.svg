@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 700" role="img" aria-labelledby="title desc">
+  <title id="title">Varanda botânica</title>
+  <desc id="desc">Composição ilustrada com folhas, vasos de plantas e uma janela aberta.</desc>
+  <rect width="900" height="700" fill="#e4e8dc"/>
+  <path d="M0 0h900v178H0z" fill="#d4ddce"/>
+  <path d="M60 0v700M840 0v700" stroke="#b8c4b2" stroke-width="18"/>
+  <path d="M72 82h748v350H72z" fill="#f7f7f5"/>
+  <path d="M94 104h704v307H94z" fill="#c8d8c3"/>
+  <path d="M446 104v307M94 259h704" stroke="#f7f7f5" stroke-width="18"/>
+  <path d="M94 411h704v28H94z" fill="#a98b6c"/>
+  <path d="M0 541h900v159H0z" fill="#d7c8b5"/>
+  <ellipse cx="225" cy="577" rx="116" ry="24" fill="#b7a28a"/>
+  <path d="M142 441h166l-17 122H160z" fill="#a96f4e"/>
+  <path d="M153 441h144v22H153z" fill="#86553e"/>
+  <path d="M221 442c-4-89-54-132-67-202 51 29 88 76 86 147 9-81 52-144 119-180-8 91-47 151-105 201 67-36 127-45 180-27-66 48-130 66-213 61z" fill="#56715b"/>
+  <path d="M223 438c-21-88-4-165 44-229 22 74 19 151-19 230M220 435c-50-62-63-122-50-195 53 46 81 108 77 181" fill="#748b6d"/>
+  <path d="M218 445c27-86 82-138 158-163-32 73-78 130-143 174" fill="#405d4a"/>
+  <ellipse cx="622" cy="579" rx="135" ry="25" fill="#b7a28a"/>
+  <path d="M530 436h185l-21 132H550z" fill="#d2b893"/>
+  <path d="M542 436h161v23H542z" fill="#aa8d69"/>
+  <path d="M623 437c-4-101 17-186 92-271 21 92 3 174-68 268 74-69 151-93 230-71-67 73-147 105-237 104z" fill="#59745d"/>
+  <path d="M628 435c-53-94-47-185 0-266 47 85 54 175 18 269M624 434c-77-62-111-139-100-232 76 59 117 134 120 224" fill="#819579"/>
+  <path d="M627 437c15-104 61-180 138-227-20 97-63 174-127 233" fill="#49634f"/>
+  <path d="M0 648c138-42 257-42 382 0s251 43 518-5v57H0z" fill="#c5b498"/>
+</svg>

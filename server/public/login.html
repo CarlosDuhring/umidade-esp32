@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <title>Acessar · PlantSpace</title>
+    <link rel="stylesheet" href="/plantspace.css?v=1" />
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
+    <script src="/config.js" defer></script>
+    <script src="/auth.js?v=1" defer></script>
+  </head>
+  <body class="auth-page">
+    <main class="auth-layout">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
+      <section class="auth-panel" aria-labelledby="authTitle">
+        <p class="eyebrow">SEU ESPAÇO DE CULTIVO</p>
+        <h1 id="authTitle">Acompanhe cada planta.</h1>
+        <p class="muted">Entre na sua conta ou crie uma para organizar seus vasos.</p>
+        <div class="auth-tabs" role="tablist" aria-label="Acesso">
+          <button class="auth-tab is-active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login">Entrar</button>
+          <button class="auth-tab" id="signupTab" type="button" role="tab" aria-selected="false" data-mode="signup">Criar conta</button>
+        </div>
+        <form id="authForm" class="form-stack">
+          <label id="nameField" class="field" hidden>Nome<input id="fullName" name="name" autocomplete="name" /></label>
+          <label class="field">E-mail<input id="email" name="email" type="email" autocomplete="email" required /></label>
+          <label class="field">Senha<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
+          <label id="phoneField" class="field" hidden>WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+5511999999999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /></label>
+          <p id="phoneNote" class="field-note" hidden>O número ficará salvo para uma futura integração. O envio pelo WhatsApp ainda não está ativo.</p>
+          <button id="submitAuth" class="button button-primary button-wide" type="submit">Entrar</button>
+          <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
+        </form>
+        <a class="back-link" href="/">Voltar para a demonstração</a>
+      </section>
+      <footer class="auth-footer">PlantSpace · cuidado conectado, sem rega automática</footer>
+    </main>
+  </body>
+</html>

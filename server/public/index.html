@@ -3,59 +3,60 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Umidade do Solo · ESP32</title>
-    <link rel="stylesheet" href="/style.css?v=2" />
+    <meta name="theme-color" content="#f7f7f5" />
+    <meta name="description" content="Acompanhe a umidade das suas plantas e saiba quando é hora de regar." />
+    <title>PlantSpace · Cuidado conectado para suas plantas</title>
+    <link rel="stylesheet" href="/plantspace.css?v=1" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
-    <script src="/app.js?v=2" defer></script>
+    <script src="/config.js" defer></script>
+    <script src="/landing.js?v=1" defer></script>
   </head>
   <body>
-    <main class="wrap">
-      <header class="top">
-        <div>
-          <h1>Umidade do Solo</h1>
-          <p class="sub">ESP32 + sensor resistivo <span id="device"></span></p>
+    <header class="site-header">
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
+      <nav class="site-nav" aria-label="Navegação principal"><a href="#demo">Demonstração</a><a href="#sobre">Sobre</a></nav>
+      <div class="header-actions"><a class="button button-secondary" href="/login.html?mode=login">Entrar</a><a class="button button-primary" href="/login.html?mode=signup">Criar conta</a></div>
+    </header>
+
+    <main>
+      <section class="hero shell">
+        <div class="hero-copy">
+          <p class="eyebrow">CUIDADO CONECTADO PARA SUAS PLANTAS</p>
+          <h1>Entenda o que suas plantas precisam.</h1>
+          <p>Acompanhe a umidade de cada vaso, veja o histórico e receba um aviso quando for hora de regar. Você cuida; o PlantSpace monitora.</p>
+          <div class="hero-actions"><a class="button button-primary" href="/login.html?mode=signup">Criar minha conta</a><a class="button button-secondary" href="#demo">Ver demonstração</a></div>
         </div>
-        <span id="pill" class="pill is-offline">Carregando…</span>
-      </header>
-
-      <section class="grid">
-        <article class="card hero">
-          <p class="label">Umidade atual</p>
-          <p class="big"><span id="percent">--</span><small>%</small></p>
-          <div class="bar"><i id="bar"></i></div>
-          <p class="advice" id="advice">Aguardando a primeira leitura…</p>
-        </article>
-
-        <article class="card">
-          <p class="label">Status</p>
-          <p class="status" id="statusLabel">--</p>
-          <dl class="meta">
-            <div><dt>Última leitura</dt><dd id="lastUpdate">--</dd></div>
-            <div><dt>Sinal WiFi</dt><dd id="rssi">--</dd></div>
-            <div><dt>ADC bruto</dt><dd id="adc">--</dd></div>
-            <div><dt>Faixa calibrada</dt><dd id="cal">--</dd></div>
-          </dl>
-        </article>
+        <div class="botanical-art">
+          <img src="/assets/plantspace-botanical.svg" alt="Ilustração botânica de folhas e vasos em uma varanda" />
+          <span class="art-caption">Um espaço melhor para cada planta</span>
+        </div>
       </section>
 
-      <section class="card chart-card">
-        <div class="chart-head">
-          <div>
-            <p class="label">Histórico</p>
-            <p class="sub">Leituras mais recentes</p>
-          </div>
-          <button id="refresh" class="btn" type="button">Atualizar</button>
+      <section id="demo" class="demo-section shell">
+        <div class="section-heading">
+          <div><p class="eyebrow">PROTÓTIPO EM FUNCIONAMENTO</p><h2>Uma leitura real, agora.</h2></div>
+          <div class="demo-meta"><span id="demoDot" class="live-dot"></span><span id="demoUpdated">Conectando ao sensor…</span></div>
         </div>
-        <div id="chartBox" class="chart-box">
-          <canvas id="chart"></canvas>
+        <div class="demo-grid">
+          <article class="surface demo-reading">
+            <div class="demo-reading-top"><div><span class="tiny-label">VASO DE DEMONSTRAÇÃO</span><h3 id="demoDevice" class="demo-plant-name">Sensor do protótipo</h3></div><span id="demoStatus" class="demo-status is-offline">Carregando</span></div>
+            <div><p class="demo-percent"><span id="demoPercent">--</span><small>%</small></p><div class="meter"><span id="demoMeter" style="width:0%"></span></div><p id="demoAdvice" class="muted">Buscando a última medição.</p></div>
+            <div class="demo-details"><div class="detail-item"><span>ADC bruto</span><strong id="demoAdc">--</strong></div><div class="detail-item"><span>Sinal WiFi</span><strong id="demoRssi">--</strong></div><div class="detail-item"><span>Última leitura</span><strong id="demoAge">--</strong></div></div>
+          </article>
+          <article class="surface demo-chart"><div class="demo-reading-top"><div><span class="tiny-label">HISTÓRICO DO PROTÓTIPO</span><p class="muted">Leituras recebidas pelo ESP32</p></div><button id="refreshDemo" class="button button-quiet" type="button" aria-label="Atualizar demonstração">Atualizar</button></div><div class="chart-box"><canvas id="demoChart"></canvas></div></article>
         </div>
-        <p class="empty" id="empty">Sem leituras ainda. Ligue o ESP32.</p>
       </section>
 
-      <footer>
-        <span id="updated">--</span> · atualiza a cada 5 s ·
-        <a href="/api/status" target="_blank" rel="noreferrer">API</a>
-      </footer>
+      <section id="sobre" class="plant-intro shell">
+        <p class="eyebrow">SEU JARDIM, ORGANIZADO</p>
+        <h2>Vasos, leituras e alertas reunidos em um só lugar.</h2>
+        <div class="benefit-row">
+          <article class="benefit"><h3>Um espaço por planta</h3><p>Cadastre vasos, espécies e localização. Ajuste o limite de umidade para acompanhar o seu cultivo.</p></article>
+          <article class="benefit"><h3>Histórico para acompanhar</h3><p>Veja as leituras recentes e como a umidade mudou ao longo dos últimos 30 dias.</p></article>
+          <article class="benefit"><h3>Alertas para agir</h3><p>Receba um aviso no painel quando o solo ficar seco ou quando um sensor parar de enviar dados. O sistema monitora; não rega automaticamente.</p></article>
+        </div>
+      </section>
     </main>
+    <footer class="site-footer shell"><span>PlantSpace · monitoramento de umidade do solo</span><span>Notificações WhatsApp serão ativadas em uma etapa futura.</span></footer>
   </body>
 </html>

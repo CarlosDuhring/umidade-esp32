@@ -12,13 +12,17 @@
     UMIDADE_CRITICA   abaixo disso = "precisa molhar" (padrao 20)
     CAL_SECO          ADC com o sensor seco (padrao 2500)
     CAL_UMIDO         ADC com o sensor na agua (padrao 1250)
-    OFFLINE_MS        tempo sem leitura para considerar offline (padrao 180000)
+    OFFLINE_MS        tempo sem leitura para considerar offline (padrao 3600000)
     DATA_DIR          pasta para salvar o historico (padrao ./data)
+    SUPABASE_URL      URL publica do projeto Supabase
+    SUPABASE_ANON_KEY chave publishable/anon do Supabase (pode ser exibida no browser)
 */
 
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
+const crypto = require('crypto');
+const { createClient } = require('@supabase/supabase-js');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -29,7 +33,7 @@ const CONFIG = {
   critical: Number(process.env.UMIDADE_CRITICA ?? 20),
   calSeco: Number(process.env.CAL_SECO ?? 2500),
   calUmido: Number(process.env.CAL_UMIDO ?? 1250),
-  offlineMs: Number(process.env.OFFLINE_MS ?? 3 * 60 * 1000),
+  offlineMs: Number(process.env.OFFLINE_MS ?? 60 * 60 * 1000),
   maxHistory: 1000,
 };
 
@@ -37,7 +41,120 @@ const DATA_DIR = process.env.DATA_DIR || path.join(__dirname, 'data');
 const DATA_FILE = path.join(DATA_DIR, 'readings.json');
 
 app.use(express.json({ limit: '8kb' }));
+app.get('/config.js', (_req, res) => {
+  res.type('application/javascript').set('Cache-Control', 'no-store').send(
+    `window.PLANTSPACE_CONFIG = ${JSON.stringify({
+      supabaseUrl: process.env.SUPABASE_URL || '',
+      supabaseAnonKey: process.env.SUPABASE_ANON_KEY || '',
+    })};`
+  );
+});
 app.use(express.static(path.join(__dirname, 'public')));
+
+function supabaseAdmin() {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
+  return createClient(process.env.SUPABASE_URL, process.env.SUPABASE_SERVICE_ROLE_KEY, {
+    auth: { autoRefreshToken: false, persistSession: false },
+  });
+}
+
+function hashDeviceKey(key) {
+  return crypto.createHash('sha256').update(key).digest('hex');
+}
+
+async function authenticatedUser(req) {
+  const admin = supabaseAdmin();
+  const token = req.get('authorization')?.replace(/^Bearer\s+/i, '');
+  if (!admin || !token) return null;
+  const { data, error } = await admin.auth.getUser(token);
+  return error ? null : data.user;
+}
+
+app.post('/api/sensors', async (req, res) => {
+  const user = await authenticatedUser(req);
+  if (!user) return res.status(401).json({ error: 'Sessao invalida.' });
+  const admin = supabaseAdmin();
+  const plantId = String(req.body?.plant_id || '');
+  if (!/^[0-9a-f-]{36}$/i.test(plantId)) return res.status(400).json({ error: 'Vaso invalido.' });
+
+  try {
+    const { data: plant, error: plantError } = await admin.from('plants').select('id,sensor_id').eq('id', plantId).eq('user_id', user.id).maybeSingle();
+    if (plantError) throw plantError;
+    if (!plant) return res.status(404).json({ error: 'Vaso nao encontrado.' });
+    if (plant.sensor_id) return res.status(409).json({ error: 'Este vaso ja tem um sensor associado.' });
+
+    const deviceKey = crypto.randomBytes(32).toString('base64url');
+    const { data: sensor, error: sensorError } = await admin.from('sensors').insert({
+      user_id: user.id,
+      plant_id: plant.id,
+      device_key_hash: hashDeviceKey(deviceKey),
+      name: `Sensor ${plant.id.slice(0, 8)}`,
+    }).select('id').single();
+    if (sensorError) throw sensorError;
+
+    const { error: linkError } = await admin.from('plants').update({ sensor_id: sensor.id }).eq('id', plant.id).eq('user_id', user.id);
+    if (linkError) {
+      await admin.from('sensors').delete().eq('id', sensor.id).eq('user_id', user.id);
+      throw linkError;
+    }
+    res.status(201).json({ sensor_id: sensor.id, device_key: deviceKey });
+  } catch (error) {
+    console.error('Sensor registration failed:', error.message);
+    res.status(500).json({ error: 'Nao foi possivel associar o sensor.' });
+  }
+});
+
+app.post('/api/device/readings', async (req, res) => {
+  const deviceKey = req.get('x-device-key') || '';
+  if (deviceKey.length < 32) return res.status(401).json({ error: 'Chave de dispositivo invalida.' });
+  const adc = Number(req.body?.adc);
+  if (!Number.isInteger(adc) || adc < 0 || adc > 4095) return res.status(400).json({ error: 'ADC deve estar entre 0 e 4095.' });
+
+  const admin = supabaseAdmin();
+  if (!admin) return res.status(503).json({ error: 'Ingestao de sensores ainda nao configurada.' });
+  try {
+    const { data: sensor, error: sensorError } = await admin.from('sensors').select('id,user_id,plant_id').eq('device_key_hash', hashDeviceKey(deviceKey)).maybeSingle();
+    if (sensorError) throw sensorError;
+    if (!sensor) return res.status(401).json({ error: 'Chave de dispositivo invalida.' });
+
+    const percent = adcParaPorcentagem(adc);
+    const { data: reading, error: readingError } = await admin.from('readings').insert({ sensor_id: sensor.id, adc, moisture_percent: percent }).select('id,recorded_at').single();
+    if (readingError) throw readingError;
+    await admin.from('sensors').update({ last_seen_at: reading.recorded_at }).eq('id', sensor.id);
+
+    const { data: plant } = await admin.from('plants').select('id,threshold_percent,last_low_alert_at,alert_repeat_hours').eq('id', sensor.plant_id).maybeSingle();
+    let alert = null;
+    if (plant && percent < plant.threshold_percent) {
+      const due = !plant.last_low_alert_at || Date.now() - new Date(plant.last_low_alert_at).getTime() >= plant.alert_repeat_hours * 3600000;
+      if (due) {
+        alert = { type: 'low_moisture', plant_id: plant.id, moisture_percent: percent, created_at: reading.recorded_at };
+        await admin.from('plants').update({ last_low_alert_at: reading.recorded_at }).eq('id', plant.id);
+        await admin.from('alerts').insert({
+          user_id: sensor.user_id,
+          plant_id: plant.id,
+          type: alert.type,
+          moisture_percent: percent,
+          message: `Hora de regar: umidade em ${percent}%, abaixo do limite da planta.`,
+        });
+      }
+    } else if (plant?.last_low_alert_at) {
+      alert = { type: 'normal_again', plant_id: plant.id, moisture_percent: percent, created_at: reading.recorded_at };
+      await admin.from('plants').update({ last_low_alert_at: null }).eq('id', plant.id);
+      await admin.from('alerts').insert({
+        user_id: sensor.user_id,
+        plant_id: plant.id,
+        type: alert.type,
+        moisture_percent: percent,
+        message: `Umidade normalizada: ${percent}%.`,
+      });
+    }
+
+    res.status(201).json({ ok: true, reading, alert });
+  } catch (error) {
+    console.error('Device reading insert failed:', error.message);
+    res.status(500).json({ error: 'Nao foi possivel registrar a leitura.' });
+  }
+});
 
 let readings = carregar();
 
@@ -82,7 +199,8 @@ function adcParaPorcentagem(adc) {
   return Math.max(0, Math.min(100, Math.round(pct)));
 }
 
-function classificar(porcentagem, idadeMs) {  if (idadeMs > CONFIG.offlineMs) {
+function classificar(porcentagem, idadeMs) {
+  if (idadeMs > CONFIG.offlineMs) {
     return {
       level: 'offline',
       label: 'Sem sinal',
