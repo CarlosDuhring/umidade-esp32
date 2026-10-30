@@ -5,45 +5,44 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f7f5" />
     <title>Acessar · PlantSpace</title>
-    <link rel="stylesheet" href="/plantspace.css?v=4" />
+    <link rel="stylesheet" href="/plantspace.css?v=6" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="/config.js" defer></script>
-    <script src="/auth.js?v=1" defer></script>
+    <script src="/auth.js?v=2" defer></script>
   </head>
   <body class="auth-page">
-    <main class="auth-layout">
+    <header class="auth-header">
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
-      <section class="auth-panel" aria-labelledby="authTitle">
-        <p class="eyebrow">SEU ESPAÇO DE CULTIVO</p>
-        <h1 id="authTitle">Acompanhe cada planta.</h1>
-        <p class="muted">Entre na sua conta ou crie uma para organizar seus vasos.</p>
-        <div class="auth-tabs" role="tablist" aria-label="Acesso">
-          <button class="auth-tab is-active" id="loginTab" type="button" role="tab" aria-selected="true" data-mode="login">Entrar</button>
-          <button class="auth-tab" id="signupTab" type="button" role="tab" aria-selected="false" data-mode="signup">Criar conta</button>
-        </div>
+      <a id="authModeLink" class="auth-mode-link" href="/login.html?mode=login">Já tem uma conta? <strong>Entrar <span aria-hidden="true">→</span></strong></a>
+    </header>
+    <div id="authProgress" class="auth-progress"><span id="signupProgressFill"></span></div>
+    <main class="auth-layout">
+      <section id="authStage" class="auth-stage" aria-labelledby="authTitle">
+        <p id="authEyebrow" class="eyebrow">PLANTSPACE · SEU ESPAÇO DE CULTIVO</p>
+        <p id="signupStepLabel" class="step-label" hidden>ETAPA 1 DE 2</p>
+        <h1 id="authTitle">Entre no seu jardim.</h1>
+        <p id="authSubtitle" class="auth-subtitle">Acesse suas plantas, leituras e avisos em um só lugar.</p>
         <form id="authForm" class="form-stack">
-          <div id="signupProgress" class="step-progress" hidden><span id="signupProgressFill"></span></div>
-          <p id="signupStepLabel" class="step-label" hidden>ETAPA 1 DE 2</p>
           <div id="signupStepOne" class="form-stack" hidden>
-            <label id="nameField" class="field">Nome completo<input id="fullName" name="name" autocomplete="name" /></label>
-            <label id="phoneField" class="field">WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+5511999999999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /></label>
+            <label id="nameField" class="field">Seu nome<input id="fullName" name="name" autocomplete="name" minlength="2" maxlength="80" placeholder="Ex.: Ana Silva" /></label>
+            <label id="phoneField" class="field">WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+55 11 99999-9999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /><span class="field-hint">Exemplo: +55 seguido do DDD e do número.</span></label>
           </div>
           <div id="signupStepTwo" class="form-stack" hidden>
-            <label class="field">E-mail<input id="signupEmail" name="signupEmail" type="email" autocomplete="email" /></label>
-            <label class="field">Senha<input id="signupPassword" name="signupPassword" type="password" autocomplete="new-password" minlength="8" /></label>
+            <label class="field">Seu e-mail<input id="signupEmail" name="signupEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com" /></label>
+            <label class="field">Crie uma senha<span class="password-field"><input id="signupPassword" name="signupPassword" type="password" autocomplete="new-password" minlength="8" placeholder="Pelo menos 8 caracteres" /><button id="toggleSignupPassword" class="password-toggle" type="button" aria-label="Mostrar senha">Mostrar</button></span><span id="passwordHint" class="field-hint">Use no mínimo 8 caracteres.</span></label>
           </div>
           <div id="loginFields" class="form-stack">
-            <label class="field">E-mail<input id="email" name="email" type="email" autocomplete="email" required /></label>
-            <label class="field">Senha<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
+            <label class="field">E-mail<input id="email" name="email" type="email" autocomplete="email" placeholder="voce@exemplo.com" required /></label>
+            <label class="field">Senha<span class="password-field"><input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required /><button id="toggleLoginPassword" class="password-toggle" type="button" aria-label="Mostrar senha">Mostrar</button></span></label>
           </div>
-          <p id="phoneNote" class="field-note" hidden>O número ficará salvo para uma futura integração. O envio pelo WhatsApp ainda não está ativo.</p>
-          <div id="signupNavigation" class="step-actions" hidden><button id="signupBack" class="button button-quiet" type="button">Voltar</button><button id="signupNext" class="button button-primary" type="button">Continuar</button></div>
+          <p id="phoneNote" class="field-note" hidden>O número fica salvo para uma futura integração. O WhatsApp ainda não envia mensagens.</p>
+          <div id="signupNavigation" class="step-actions" hidden><button id="signupBack" class="button button-quiet" type="button">Voltar</button><button id="signupNext" class="button button-primary" type="button">Continuar <span aria-hidden="true">→</span></button></div>
           <button id="submitAuth" class="button button-primary button-wide" type="submit">Entrar</button>
           <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
         </form>
         <a class="back-link" href="/">Voltar para a demonstração</a>
       </section>
-      <footer class="auth-footer">PlantSpace · cuidado conectado, sem rega automática</footer>
     </main>
+    <footer class="auth-footer">PlantSpace <span>·</span> cuidado conectado, sem rega automática</footer>
   </body>
 </html>

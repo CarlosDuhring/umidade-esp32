@@ -17,12 +17,19 @@ function setMode(mode) {
   authMode = mode;
   const signup = mode === 'signup';
   if (signup) signupStep = 1;
-  document.getElementById('loginTab').classList.toggle('is-active', !signup);
-  document.getElementById('signupTab').classList.toggle('is-active', signup);
-  document.getElementById('loginTab').setAttribute('aria-selected', String(!signup));
-  document.getElementById('signupTab').setAttribute('aria-selected', String(signup));
+  document.getElementById('authProgress').hidden = !signup;
+  document.getElementById('authModeLink').innerHTML = signup
+    ? 'Já tem uma conta? <strong>Entrar <span aria-hidden="true">→</span></strong>'
+    : 'Novo por aqui? <strong>Criar conta <span aria-hidden="true">→</span></strong>';
+  document.getElementById('authModeLink').href = signup ? '/login.html?mode=login' : '/login.html?mode=signup';
+  document.getElementById('authEyebrow').textContent = signup ? 'PLANTSPACE · CUIDADO CONECTADO' : 'PLANTSPACE · SEU ESPAÇO DE CULTIVO';
+  document.getElementById('authTitle').textContent = signup
+    ? (signupStep === 1 ? 'Vamos começar pelo seu nome.' : 'Como podemos falar com você?')
+    : 'Entre no seu jardim.';
+  document.getElementById('authSubtitle').textContent = signup
+    ? (signupStep === 1 ? 'Seu nome e WhatsApp ajudam a preparar seu espaço de cultivo.' : 'Crie seus dados de acesso para acompanhar suas plantas em qualquer dispositivo.')
+    : 'Acesse suas plantas, leituras e avisos em um só lugar.';
   document.getElementById('loginFields').hidden = signup;
-  document.getElementById('signupProgress').hidden = !signup;
   document.getElementById('signupStepLabel').hidden = !signup;
   document.getElementById('signupNavigation').hidden = !signup;
   document.getElementById('signupStepOne').hidden = !signup || signupStep !== 1;
@@ -42,11 +49,20 @@ function setMode(mode) {
 
 function updateSignupProgress() {
   const signup = authMode === 'signup';
+  if (signup) {
+    document.getElementById('authEyebrow').textContent = 'PLANTSPACE · CUIDADO CONECTADO';
+    document.getElementById('authTitle').textContent = signupStep === 1 ? 'Vamos começar pelo seu nome.' : 'Como podemos falar com você?';
+    document.getElementById('authSubtitle').textContent = signupStep === 1
+      ? 'Seu nome e WhatsApp ajudam a preparar seu espaço de cultivo.'
+      : 'Crie seus dados de acesso para acompanhar suas plantas em qualquer dispositivo.';
+  }
   document.getElementById('signupStepOne').hidden = !signup || signupStep !== 1;
   document.getElementById('signupStepTwo').hidden = !signup || signupStep !== 2;
   document.getElementById('signupStepLabel').textContent = `ETAPA ${signupStep} DE 2`;
   document.getElementById('signupProgressFill').style.width = signupStep === 1 ? '50%' : '100%';
-  document.getElementById('signupNext').textContent = signupStep === 1 ? 'Continuar' : 'Criar minha conta';
+  document.getElementById('signupNext').innerHTML = signupStep === 1
+    ? 'Continuar <span aria-hidden="true">→</span>'
+    : 'Criar minha conta <span aria-hidden="true">→</span>';
   document.getElementById('signupBack').hidden = signupStep === 1;
   document.getElementById('fullName').required = signup && signupStep === 1;
   document.getElementById('phone').required = signup && signupStep === 1;
@@ -81,6 +97,22 @@ document.getElementById('signupBack').addEventListener('click', () => {
   signupStep = 1;
   updateSignupProgress();
   showMessage('');
+});
+
+for (const [buttonId, inputId] of [['toggleSignupPassword', 'signupPassword'], ['toggleLoginPassword', 'password']]) {
+  document.getElementById(buttonId).addEventListener('click', () => {
+    const input = document.getElementById(inputId);
+    const reveal = input.type === 'password';
+    input.type = reveal ? 'text' : 'password';
+    document.getElementById(buttonId).textContent = reveal ? 'Ocultar' : 'Mostrar';
+    document.getElementById(buttonId).setAttribute('aria-label', reveal ? 'Ocultar senha' : 'Mostrar senha');
+  });
+}
+
+document.getElementById('signupPassword').addEventListener('input', (event) => {
+  const valid = event.target.value.length >= 8;
+  document.getElementById('passwordHint').textContent = valid ? 'Senha com tamanho válido.' : 'Use no mínimo 8 caracteres.';
+  document.getElementById('passwordHint').classList.toggle('is-valid', valid);
 });
 
 document.querySelectorAll('.auth-tab').forEach((tab) => {
