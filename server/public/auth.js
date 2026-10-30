@@ -6,6 +6,7 @@ const authClient = window.PLANTSPACE_CONFIG?.supabaseUrl && window.PLANTSPACE_CO
 
 const authMessage = document.getElementById('authMessage');
 const submitButton = document.getElementById('submitAuth');
+let signupStep = 1;
 
 function showMessage(message, kind = '') {
   authMessage.textContent = message;
@@ -15,19 +16,65 @@ function showMessage(message, kind = '') {
 function setMode(mode) {
   authMode = mode;
   const signup = mode === 'signup';
+  if (signup) signupStep = 1;
   document.getElementById('loginTab').classList.toggle('is-active', !signup);
   document.getElementById('signupTab').classList.toggle('is-active', signup);
   document.getElementById('loginTab').setAttribute('aria-selected', String(!signup));
   document.getElementById('signupTab').setAttribute('aria-selected', String(signup));
-  document.getElementById('nameField').hidden = !signup;
-  document.getElementById('phoneField').hidden = !signup;
+  document.getElementById('loginFields').hidden = signup;
+  document.getElementById('signupProgress').hidden = !signup;
+  document.getElementById('signupStepLabel').hidden = !signup;
+  document.getElementById('signupNavigation').hidden = !signup;
+  document.getElementById('signupStepOne').hidden = !signup || signupStep !== 1;
+  document.getElementById('signupStepTwo').hidden = !signup || signupStep !== 2;
   document.getElementById('phoneNote').hidden = !signup;
-  document.getElementById('fullName').required = signup;
-  document.getElementById('phone').required = signup;
-  document.getElementById('password').autocomplete = signup ? 'new-password' : 'current-password';
-  submitButton.textContent = signup ? 'Criar conta' : 'Entrar';
+  document.getElementById('email').required = !signup;
+  document.getElementById('password').required = !signup;
+  submitButton.hidden = signup;
+  updateSignupProgress();
+  submitButton.textContent = 'Entrar';
   showMessage('');
 }
+
+function updateSignupProgress() {
+  const signup = authMode === 'signup';
+  document.getElementById('signupStepOne').hidden = !signup || signupStep !== 1;
+  document.getElementById('signupStepTwo').hidden = !signup || signupStep !== 2;
+  document.getElementById('signupStepLabel').textContent = `ETAPA ${signupStep} DE 2`;
+  document.getElementById('signupProgressFill').style.width = signupStep === 1 ? '50%' : '100%';
+  document.getElementById('signupNext').textContent = signupStep === 1 ? 'Continuar' : 'Criar minha conta';
+  document.getElementById('signupBack').hidden = signupStep === 1;
+  document.getElementById('fullName').required = signup && signupStep === 1;
+  document.getElementById('phone').required = signup && signupStep === 1;
+  document.getElementById('signupEmail').required = signup && signupStep === 2;
+  document.getElementById('signupPassword').required = signup && signupStep === 2;
+}
+
+function nextSignupStep() {
+  if (signupStep === 1) {
+    const name = document.getElementById('fullName');
+    const phone = document.getElementById('phone');
+    if (!name.reportValidity() || !phone.reportValidity()) return;
+    if (!/^\+[1-9]\d{7,14}$/.test(phone.value.trim())) {
+      showMessage('Informe o WhatsApp com código do país, por exemplo +5511999999999.', 'is-error');
+      phone.focus();
+      return;
+    }
+    signupStep = 2;
+    updateSignupProgress();
+    showMessage('');
+    document.getElementById('signupEmail').focus();
+    return;
+  }
+  document.getElementById('authForm').requestSubmit();
+}
+
+document.getElementById('signupNext').addEventListener('click', nextSignupStep);
+document.getElementById('signupBack').addEventListener('click', () => {
+  signupStep = 1;
+  updateSignupProgress();
+  showMessage('');
+});
 
 document.querySelectorAll('.auth-tab').forEach((tab) => {
   tab.addEventListener('click', () => setMode(tab.dataset.mode));
@@ -35,6 +82,10 @@ document.querySelectorAll('.auth-tab').forEach((tab) => {
 
 document.getElementById('authForm').addEventListener('submit', async (event) => {
   event.preventDefault();
+  if (authMode === 'signup' && signupStep === 1) {
+    nextSignupStep();
+    return;
+  }
   if (!authClient) {
     showMessage('O acesso ainda está sendo configurado. Tente novamente mais tarde.', 'is-error');
     return;
@@ -42,17 +93,13 @@ document.getElementById('authForm').addEventListener('submit', async (event) => 
 
   submitButton.disabled = true;
   showMessage(authMode === 'signup' ? 'Criando sua conta…' : 'Entrando…');
-  const email = document.getElementById('email').value.trim();
-  const password = document.getElementById('password').value;
+  const email = (authMode === 'signup' ? document.getElementById('signupEmail') : document.getElementById('email')).value.trim();
+  const password = (authMode === 'signup' ? document.getElementById('signupPassword') : document.getElementById('password')).value;
 
   try {
     if (authMode === 'signup') {
       const name = document.getElementById('fullName').value.trim();
       const phone = document.getElementById('phone').value.trim();
-      if (!/^\+[1-9]\d{7,14}$/.test(phone)) {
-        showMessage('Informe o WhatsApp com código do país, por exemplo +5511999999999.', 'is-error');
-        return;
-      }
       const { data, error } = await authClient.auth.signUp({
         email,
         password,
@@ -62,7 +109,7 @@ document.getElementById('authForm').addEventListener('submit', async (event) => 
       if (data.session) {
         window.location.assign('/dashboard.html');
       } else {
-        showMessage('Conta criada. Verifique seu e-mail para confirmar o acesso.', 'is-success');
+        showMessage('A conta foi criada, mas a confirmação por e-mail ainda está ativa no Supabase.', 'is-info');
       }
     } else {
       const { error } = await authClient.auth.signInWithPassword({ email, password });

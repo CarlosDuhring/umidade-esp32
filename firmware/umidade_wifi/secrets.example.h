@@ -21,3 +21,8 @@ static const uint8_t TOTAL_REDES_WIFI = sizeof(REDES_WIFI) / sizeof(REDES_WIFI[0
 #define SERVIDOR_URL "http://192.168.0.10:3000/api/readings"
 #define API_KEY "troque-esta-chave"
 #define DISPOSITIVO "estufa-senai"
+
+// Para associar o ESP32 a um vaso privado, descomente e use a chave gerada
+// na tela PlantSpace > Meus vasos > Associar sensor. O endpoint deve ser:
+// https://umidade-esp32.onrender.com/api/device/readings
+// #define DEVICE_KEY "cole-a-chave-do-dispositivo-aqui"

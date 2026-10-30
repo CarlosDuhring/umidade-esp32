@@ -76,3 +76,19 @@ async function updateDemo() {
 $('refreshDemo').addEventListener('click', updateDemo);
 updateDemo();
 setInterval(updateDemo, 5000);
+
+if ('IntersectionObserver' in window && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+  const revealObserver = new IntersectionObserver((entries, observer) => {
+    for (const entry of entries) {
+      if (!entry.isIntersecting) continue;
+      entry.target.classList.add('is-visible');
+      observer.unobserve(entry.target);
+    }
+  }, { threshold: 0.12, rootMargin: '0px 0px -45px 0px' });
+  document.querySelectorAll('.demo-section, .plant-intro, .benefit').forEach((element) => {
+    element.classList.add('reveal');
+    revealObserver.observe(element);
+  });
+} else {
+  document.querySelectorAll('.demo-section, .plant-intro, .benefit').forEach((element) => element.classList.add('is-visible'));
+}

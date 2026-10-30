@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f7f5" />
     <title>Meus vasos · PlantSpace</title>
-    <link rel="stylesheet" href="/plantspace.css?v=1" />
+    <link rel="stylesheet" href="/plantspace.css?v=4" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <script src="/config.js" defer></script>
@@ -38,25 +38,35 @@
     <dialog id="plantDialog" class="dialog">
       <form id="plantForm" class="dialog-form">
         <div class="dialog-heading"><div><p class="eyebrow">CADASTRO</p><h2 id="dialogTitle">Adicionar vaso</h2></div><button id="closeDialog" class="icon-button" type="button" aria-label="Fechar">×</button></div>
-        <label class="field">Nome do vaso ou planta<input id="plantName" required maxlength="60" placeholder="Ex.: Manjericão da cozinha" /></label>
-        <label class="field">Espécie
-          <select id="plantSpecies" required>
-            <option value="">Escolha uma espécie</option>
-            <optgroup label="Ervas e hortaliças"><option>Manjericão</option><option>Hortelã</option><option>Alecrim</option><option>Alface</option><option>Tomate</option><option>Pimenta</option></optgroup>
-            <optgroup label="Plantas de interior"><option>Jiboia</option><option>Zamioculca</option><option>Espada-de-são-jorge</option><option>Lírio-da-paz</option><option>Suculenta</option></optgroup>
-            <optgroup label="Frutíferas"><option>Morango</option><option>Limoeiro</option><option>Tomateiro</option></optgroup>
-            <option value="custom">Outra espécie…</option>
-          </select>
-        </label>
-        <label id="customSpeciesField" class="field" hidden>Nome da espécie<input id="customSpecies" maxlength="60" /></label>
-        <label class="field">Localização<input id="plantLocation" required maxlength="80" placeholder="Ex.: varanda, perto da janela" /></label>
-        <label class="field">Limite para avisar quando estiver seco <span class="field-inline"><input id="plantThreshold" type="number" min="1" max="99" value="35" required /><span>%</span></span></label>
-        <label class="field">Repetir aviso de umidade baixa<select id="alertRepeat"><option value="6">A cada 6 horas</option><option value="12" selected>A cada 12 horas</option><option value="24">Uma vez por dia</option><option value="48">A cada 2 dias</option><option value="168">Uma vez por semana</option></select></label>
-        <p id="speciesHint" class="field-note">Sugestão inicial editável; ajuste conforme sua planta e o sensor.</p>
-        <div class="dialog-actions"><button id="cancelDialog" class="button button-quiet" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar vaso</button></div>
+        <div class="step-progress"><span id="plantProgressFill"></span></div>
+        <p id="plantStepLabel" class="step-label">ETAPA 1 DE 3</p>
+        <section id="plantStepOne" class="form-stack"><label class="field">Como você chama este vaso?<input id="plantName" required maxlength="60" placeholder="Ex.: Manjericão da cozinha" /></label></section>
+        <section id="plantStepTwo" class="form-stack" hidden>
+          <label class="field">Espécie
+            <select id="plantSpecies" required>
+              <option value="">Escolha uma espécie</option>
+              <optgroup label="Ervas e hortaliças"><option>Manjericão</option><option>Hortelã</option><option>Alecrim</option><option>Alface</option><option>Tomate</option><option>Pimenta</option></optgroup>
+              <optgroup label="Plantas de interior"><option>Jiboia</option><option>Zamioculca</option><option>Espada-de-são-jorge</option><option>Lírio-da-paz</option><option>Suculenta</option></optgroup>
+              <optgroup label="Frutíferas"><option>Morango</option><option>Limoeiro</option><option>Tomateiro</option></optgroup>
+              <option value="custom">Outra espécie…</option>
+            </select>
+          </label>
+          <label id="customSpeciesField" class="field" hidden>Nome da espécie<input id="customSpecies" maxlength="60" /></label>
+          <label class="field">Onde está o vaso?<input id="plantLocation" required maxlength="80" placeholder="Ex.: varanda, perto da janela" /></label>
+        </section>
+        <section id="plantStepThree" class="form-stack" hidden>
+          <p class="field-note">Calibre o sensor para que o percentual represente este vaso: anote o ADC no solo seco e após regar bem. A demonstração atual usa a faixa aproximada do protótipo.</p>
+          <div class="calibration-row"><label class="field">ADC no solo seco<input id="plantAdcDry" type="number" min="0" max="4095" value="2500" required /></label><label class="field">ADC após regar bem<input id="plantAdcWet" type="number" min="0" max="4095" value="1250" required /></label></div>
+          <label class="field">Limite para avisar quando estiver seco <span class="field-inline"><input id="plantThreshold" type="number" min="1" max="99" value="35" required /><span>%</span></span></label>
+          <label class="field">Repetir aviso de umidade baixa<select id="alertRepeat"><option value="6">A cada 6 horas</option><option value="12" selected>A cada 12 horas</option><option value="24">Uma vez por dia</option><option value="48">A cada 2 dias</option><option value="168">Uma vez por semana</option></select></label>
+          <p id="speciesHint" class="field-note">Sugestão inicial editável; ajuste conforme sua planta e o sensor.</p>
+        </section>
+        <p id="plantFormMessage" class="form-message" role="status"></p>
+        <div class="step-actions"><button id="plantCancel" class="button button-quiet" type="button">Cancelar</button><div class="step-actions-inner"><button id="plantBack" class="button button-quiet" type="button" hidden>Voltar</button><button id="plantNext" class="button button-primary" type="button">Continuar</button></div><button id="plantSave" class="button button-primary" type="submit" hidden>Salvar vaso</button></div>
       </form>
     </dialog>
     <dialog id="historyDialog" class="dialog history-dialog"><div class="dialog-form"><div class="dialog-heading"><div><p class="eyebrow">ÚLTIMOS 30 DIAS</p><h2 id="historyTitle">Histórico</h2></div><button id="closeHistory" class="icon-button" type="button" aria-label="Fechar">×</button></div><div class="history-chart"><canvas id="historyChart"></canvas></div><div id="historyTable" class="history-table"></div></div></dialog>
     <dialog id="notificationDialog" class="dialog"><form id="notificationForm" class="dialog-form"><div class="dialog-heading"><div><p class="eyebrow">PREFERÊNCIAS</p><h2>Alertas</h2></div><button id="closeNotifications" class="icon-button" type="button" aria-label="Fechar">×</button></div><label class="field">Repetir aviso de umidade baixa<select id="globalRepeat"><option value="6">A cada 6 horas</option><option value="12">A cada 12 horas</option><option value="24">Uma vez por dia</option><option value="48">A cada 2 dias</option><option value="168">Uma vez por semana</option></select></label><label class="check-row"><input id="notifyLow" type="checkbox" checked /> Aviso quando for hora de regar</label><label class="check-row"><input id="notifyNormal" type="checkbox" checked /> Aviso quando voltar ao normal</label><label class="check-row"><input id="notifyOffline" type="checkbox" checked /> Aviso quando um sensor ficar sem sinal</label><p class="field-note">Por enquanto, os avisos aparecem aqui no painel. WhatsApp e e-mail ainda não enviam mensagens.</p><p id="notificationMessage" class="form-message" role="status"></p><div class="dialog-actions"><button id="cancelNotifications" class="button button-quiet" type="button">Cancelar</button><button class="button button-primary" type="submit">Salvar preferências</button></div></form></dialog>
+    <dialog id="pairDialog" class="dialog"><div class="dialog-form"><div class="dialog-heading"><div><p class="eyebrow">ASSOCIAR DISPOSITIVO</p><h2 id="pairTitle">Configure o ESP32</h2></div><button id="closePair" class="icon-button" type="button" aria-label="Fechar">×</button></div><p class="muted">A chave é mostrada uma única vez. Copie e guarde-a antes de fechar esta janela.</p><label class="field">Chave do dispositivo<span class="field-inline"><input id="deviceKeyValue" readonly /><button id="copyDeviceKey" class="button button-quiet" type="button" aria-label="Copiar chave">Copiar chave</button></span></label><p id="pairMessage" class="form-message" role="status"></p><p class="field">Configuração para o firmware</p><pre id="deviceConfig" class="code-block"></pre><button id="copyDeviceConfig" class="button button-secondary" type="button">Copiar configuração</button><ol class="pair-steps"><li>Abra <code>firmware/umidade_wifi/secrets.h</code>.</li><li>Troque <code>SERVIDOR_URL</code> pelo endpoint acima e adicione a linha <code>DEVICE_KEY</code>.</li><li>Compile e grave o firmware no ESP32. O fluxo atual do protótipo usa <code>API_KEY</code>; o pareamento individual só funciona depois dessa atualização.</li></ol><div class="dialog-actions"><button id="donePair" class="button button-primary" type="button">Entendi</button></div></div></dialog>
   </body>
 </html>

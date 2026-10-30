@@ -11,7 +11,9 @@
   que converte em % e decide se precisa molhar.
 
   Antes de gravar, edite o secrets.h:
-    WIFI_SSID, WIFI_SENHA, SERVIDOR_URL, API_KEY, DISPOSITIVO
+    redes WiFi, SERVIDOR_URL e DISPOSITIVO
+    Para sensor privado associado a um vaso, defina DEVICE_KEY e use
+    /api/device/readings. Sem DEVICE_KEY, usa a demonstracao publica/API_KEY.
 
   Placa na Arduino IDE: "ESP32 Dev Module"
   ============================================================
@@ -141,7 +143,11 @@ bool enviarLeitura(int adc) {
   }
 
   http.addHeader("Content-Type", "application/json");
+#ifdef DEVICE_KEY
+  http.addHeader("x-device-key", DEVICE_KEY);
+#else
   http.addHeader("x-api-key", API_KEY);
+#endif
 
   int codigo = http.POST(corpo);
 

@@ -13,6 +13,7 @@ let user = null;
 let plants = [];
 let editingPlantId = null;
 let historyChart = null;
+let plantStep = 1;
 
 function message(text, kind = '') {
   $('dashboardMessage').textContent = text;
@@ -57,10 +58,11 @@ async function loadNotificationPreferences() {
   const { data, error } = await client.from('notification_preferences').select('*').eq('user_id', user.id).maybeSingle();
   if (error) throw error;
   if (!data) return;
+  user.whatsappPhone = data.whatsapp_phone;
   $('notifyLow').checked = data.low_moisture_enabled;
   $('notifyNormal').checked = data.normal_again_enabled;
   $('notifyOffline').checked = data.sensor_offline_enabled;
-  $('globalRepeat').value = String(plants[0]?.alert_repeat_hours ?? 12);
+  $('globalRepeat').value = String(data.alert_repeat_hours ?? plants[0]?.alert_repeat_hours ?? 12);
 }
 
 async function loadAlerts() {
@@ -88,7 +90,7 @@ async function loadAlerts() {
 
 async function latestReading(plant) {
   if (!plant.sensor_id) return null;
-  const { data, error } = await client.from('readings').select('id, moisture_percent, recorded_at')
+  const { data, error } = await client.from('readings').select('id, moisture_percent, adc, recorded_at')
     .eq('sensor_id', plant.sensor_id).order('recorded_at', { ascending: false }).limit(1).maybeSingle();
   if (error) throw error;
   return data;
@@ -113,7 +115,7 @@ function renderPlantCard(plant, reading) {
     <div class="plant-reading"><strong>${percent == null ? '—' : `${percent}<small>%</small>`}</strong><span>umidade</span></div>
     <div class="bar"><i style="width:${percent ?? 0}%;background:${state.level === 'critical' ? '#a24a36' : '#58715a'}"></i></div>
     <p class="plant-advice">${state.advice}</p>
-    <p class="plant-last">${reading ? `Última leitura ${relativeTime(reading.recorded_at)}` : 'Sem leitura recebida'}</p>
+    <p class="plant-last">${reading ? `ADC ${reading.adc ?? '—'} · última leitura ${relativeTime(reading.recorded_at)}` : 'Sem leitura recebida'}</p>
     <div class="plant-actions"><button class="button button-quiet" data-action="history" data-id="${plant.id}">Histórico</button>${plant.sensor_id ? '' : `<button class="button button-quiet" data-action="pair" data-id="${plant.id}">Associar sensor</button>`}<button class="button button-quiet" data-action="edit" data-id="${plant.id}">Editar</button></div>`;
   return card;
 }
@@ -153,6 +155,7 @@ async function renderPlants() {
 
 function openPlant(plant = null) {
   editingPlantId = plant?.id || null;
+  plantStep = 1;
   $('dialogTitle').textContent = plant ? 'Editar vaso' : plants.length ? 'Adicionar vaso' : 'Cadastrar primeiro vaso';
   $('plantName').value = plant?.name || '';
   $('plantSpecies').value = Object.hasOwn(SPECIES, plant?.species) ? plant.species : (plant?.species ? 'custom' : '');
@@ -160,9 +163,59 @@ function openPlant(plant = null) {
   $('customSpeciesField').hidden = $('plantSpecies').value !== 'custom';
   $('plantLocation').value = plant?.location || '';
   $('plantThreshold').value = plant?.threshold_percent ?? SPECIES[plant?.species] ?? 35;
+  $('plantAdcDry').value = plant?.adc_dry ?? 2500;
+  $('plantAdcWet').value = plant?.adc_wet ?? 1250;
   $('alertRepeat').value = String(plant?.alert_repeat_hours ?? 12);
   $('speciesHint').textContent = plant ? 'O limite foi configurado para este vaso.' : 'Sugestão inicial editável; ajuste conforme sua planta e o sensor.';
+  updatePlantStep();
   $('plantDialog').showModal();
+}
+
+function updatePlantStep() {
+  for (let step = 1; step <= 3; step++) $(`plantStep${step === 1 ? 'One' : step === 2 ? 'Two' : 'Three'}`).hidden = step !== plantStep;
+  $('plantStepLabel').textContent = `ETAPA ${plantStep} DE 3`;
+  $('plantProgressFill').style.width = `${Math.round(plantStep / 3 * 100)}%`;
+  $('plantBack').hidden = plantStep <= 1;
+  $('plantNext').hidden = plantStep === 3;
+  $('plantSave').hidden = plantStep !== 3;
+  $('plantCancel').textContent = editingPlantId ? 'Fechar' : 'Cancelar';
+  $('plantFormMessage').textContent = '';
+  $('plantName').required = plantStep === 1;
+  $('plantSpecies').required = plantStep === 2;
+  $('plantLocation').required = plantStep === 2;
+  $('customSpecies').required = plantStep === 2 && $('plantSpecies').value === 'custom';
+  $('plantThreshold').required = plantStep === 3;
+  $('plantAdcDry').required = plantStep === 3;
+  $('plantAdcWet').required = plantStep === 3;
+  $('alertRepeat').required = plantStep === 3;
+}
+
+function advancePlantStep() {
+  const fields = plantStep === 1
+    ? [$('plantName')]
+    : plantStep === 2
+      ? [$('plantSpecies'), $('customSpecies'), $('plantLocation')].filter((field) => !field.closest('[hidden]'))
+      : [$('plantAdcDry'), $('plantAdcWet'), $('plantThreshold'), $('alertRepeat')];
+  for (const field of fields) {
+    if (field.disabled) continue;
+    if (!field.reportValidity()) return;
+  }
+  if (plantStep === 2 && $('plantSpecies').value === 'custom' && !$('customSpecies').value.trim()) {
+    $('customSpecies').setCustomValidity('Informe o nome da espécie.');
+    $('customSpecies').reportValidity();
+    $('customSpecies').setCustomValidity('');
+    return;
+  }
+  if (plantStep === 3 && Number($('plantAdcDry').value) === Number($('plantAdcWet').value)) {
+    $('plantAdcWet').setCustomValidity('Os valores seco e molhado precisam ser diferentes.');
+    $('plantAdcWet').reportValidity();
+    $('plantAdcWet').setCustomValidity('');
+    return;
+  }
+  if (plantStep < 3) {
+    plantStep += 1;
+    updatePlantStep();
+  }
 }
 
 async function showHistory(plant) {
@@ -191,8 +244,12 @@ async function pairSensor(plant) {
   });
   const result = await response.json();
   if (!response.ok) throw new Error(result.error || 'Não foi possível associar o sensor.');
-  window.prompt('Guarde esta chave agora. Ela não será exibida novamente:', result.device_key);
-  message('Sensor associado. A chave é exibida uma única vez; o firmware precisa ser configurado para enviar a este vaso.', 'is-success');
+  $('pairTitle').textContent = `Sensor de ${plant.name}`;
+  $('deviceKeyValue').value = result.device_key;
+  $('deviceConfig').textContent = `#define SERVIDOR_URL "https://umidade-esp32.onrender.com/api/device/readings"\n#define DEVICE_KEY "${result.device_key}"`;
+  $('pairMessage').textContent = 'Chave gerada. Copie e guarde antes de fechar; ela não será mostrada novamente.';
+  $('pairDialog').showModal();
+  message('Sensor associado. Falta configurar esta chave no firmware do ESP32.', 'is-success');
   await loadPlants();
 }
 
@@ -205,8 +262,44 @@ $('plantSpecies').addEventListener('change', (event) => {
 $('addPlant').addEventListener('click', () => openPlant());
 $('firstPlant').addEventListener('click', () => openPlant());
 $('closeDialog').addEventListener('click', () => $('plantDialog').close());
-$('cancelDialog').addEventListener('click', () => $('plantDialog').close());
+$('plantCancel').addEventListener('click', () => $('plantDialog').close());
+$('plantNext').addEventListener('click', advancePlantStep);
+$('plantBack').addEventListener('click', () => {
+  if (plantStep > 1) {
+    plantStep -= 1;
+    updatePlantStep();
+  }
+});
+$('plantForm').addEventListener('submit', (event) => {
+  if (plantStep < 3) {
+    event.preventDefault();
+    advancePlantStep();
+  }
+});
 $('closeHistory').addEventListener('click', () => $('historyDialog').close());
+$('closePair').addEventListener('click', () => $('pairDialog').close());
+$('donePair').addEventListener('click', () => $('pairDialog').close());
+$('copyDeviceKey').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('deviceKeyValue').value);
+    $('pairMessage').textContent = 'Chave copiada. Guarde-a com segurança; não será exibida novamente.';
+    $('pairMessage').className = 'form-message is-success';
+  } catch {
+    $('deviceKeyValue').select();
+    $('pairMessage').textContent = 'Não consegui copiar automaticamente. Selecione e copie a chave manualmente.';
+    $('pairMessage').className = 'form-message is-info';
+  }
+});
+$('copyDeviceConfig').addEventListener('click', async () => {
+  try {
+    await navigator.clipboard.writeText($('deviceConfig').textContent);
+    $('pairMessage').textContent = 'Configuração copiada. Cole no secrets.h e grave o firmware.';
+    $('pairMessage').className = 'form-message is-success';
+  } catch {
+    $('pairMessage').textContent = 'Selecione o bloco de configuração e copie manualmente.';
+    $('pairMessage').className = 'form-message is-info';
+  }
+});
 $('notificationSettings').addEventListener('click', async () => {
   try {
     await loadNotificationPreferences();
@@ -221,9 +314,11 @@ $('notificationForm').addEventListener('submit', async (event) => {
   try {
     const { error: preferenceError } = await client.from('notification_preferences').upsert({
       user_id: user.id,
+      whatsapp_phone: user.user_metadata?.whatsapp_phone || user.whatsappPhone || '',
       low_moisture_enabled: $('notifyLow').checked,
       normal_again_enabled: $('notifyNormal').checked,
       sensor_offline_enabled: $('notifyOffline').checked,
+      alert_repeat_hours: repeat,
       updated_at: new Date().toISOString(),
     });
     if (preferenceError) throw preferenceError;
@@ -250,6 +345,11 @@ $('plantGrid').addEventListener('click', async (event) => {
 });
 
 $('plantForm').addEventListener('submit', async (event) => {
+  if (plantStep < 3) {
+    event.preventDefault();
+    advancePlantStep();
+    return;
+  }
   event.preventDefault();
   const selected = $('plantSpecies').value;
   const plant = {
@@ -258,6 +358,8 @@ $('plantForm').addEventListener('submit', async (event) => {
     species: selected === 'custom' ? $('customSpecies').value.trim() : selected,
     location: $('plantLocation').value.trim(),
     threshold_percent: Number($('plantThreshold').value),
+    adc_dry: Number($('plantAdcDry').value),
+    adc_wet: Number($('plantAdcWet').value),
     alert_repeat_hours: Number($('alertRepeat').value),
   };
   try {

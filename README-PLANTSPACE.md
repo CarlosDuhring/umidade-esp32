@@ -30,6 +30,6 @@ The public prototype readings are stored separately in `prototype_readings`, so 
 
 Render does not receive any Supabase key from source control. Configure the three variables in the Render service dashboard, then manually deploy the GitHub commit. The current public demonstration endpoint remains `/api/status`; the original ESP32 ingestion remains `/api/readings` with the existing `API_KEY`.
 
-For this MVP the sensor-ownership API is `/api/device/readings` with a unique `x-device-key`; the device key is stored hashed in Postgres. Pairing from the dashboard shows the raw key only once. The ESP32 firmware still uses the public prototype endpoint; switching it to per-user sensor ingestion is a separate firmware/configuration step.
+For this MVP the sensor-ownership API is `/api/device/readings` with a unique `x-device-key`; the device key is stored hashed in Postgres. Pairing from the dashboard shows the raw key only once. To bind the ESP32, set `SERVIDOR_URL` to `https://umidade-esp32.onrender.com/api/device/readings`, add `#define DEVICE_KEY "..."` from the pairing dialog in the ignored `secrets.h`, then compile and upload. With no `DEVICE_KEY`, the firmware continues using the public prototype endpoint and `API_KEY`.
 
 The signup asks for international phone format, for example `+5511999999999`. The number and notification preferences are stored, but no WhatsApp or email messages are sent until a provider and consent flow are configured.

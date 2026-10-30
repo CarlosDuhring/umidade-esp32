@@ -34,6 +34,7 @@ const CONFIG = {
   calSeco: Number(process.env.CAL_SECO ?? 2500),
   calUmido: Number(process.env.CAL_UMIDO ?? 1250),
   offlineMs: Number(process.env.OFFLINE_MS ?? 60 * 60 * 1000),
+  demoOfflineMs: Number(process.env.DEMO_OFFLINE_MS ?? 60 * 1000),
   maxHistory: 1000,
 };
 
@@ -117,12 +118,15 @@ app.post('/api/device/readings', async (req, res) => {
     if (sensorError) throw sensorError;
     if (!sensor) return res.status(401).json({ error: 'Chave de dispositivo invalida.' });
 
-    const percent = adcParaPorcentagem(adc);
+    const { data: plant, error: plantError } = await admin.from('plants')
+      .select('id,threshold_percent,adc_dry,adc_wet,last_low_alert_at,alert_repeat_hours')
+      .eq('id', sensor.plant_id).maybeSingle();
+    if (plantError) throw plantError;
+    const percent = adcParaPorcentagem(adc, plant?.adc_dry ?? CONFIG.calSeco, plant?.adc_wet ?? CONFIG.calUmido);
     const { data: reading, error: readingError } = await admin.from('readings').insert({ sensor_id: sensor.id, adc, moisture_percent: percent }).select('id,recorded_at').single();
     if (readingError) throw readingError;
     await admin.from('sensors').update({ last_seen_at: reading.recorded_at }).eq('id', sensor.id);
 
-    const { data: plant } = await admin.from('plants').select('id,threshold_percent,last_low_alert_at,alert_repeat_hours').eq('id', sensor.plant_id).maybeSingle();
     let alert = null;
     if (plant && percent < plant.threshold_percent) {
       const due = !plant.last_low_alert_at || Date.now() - new Date(plant.last_low_alert_at).getTime() >= plant.alert_repeat_hours * 3600000;
@@ -158,19 +162,6 @@ app.post('/api/device/readings', async (req, res) => {
 
 let readings = carregar();
 
-// Mediana das 3 ultimas leituras brutas: corta pico de contato sem segurar a
-// resposta (a media exponencial anterior levava ~5 leituras para chegar no valor).
-const recentes = readings.slice(-3).map((r) => (r.percentRaw ?? r.percent));
-
-function suavizar(porcentagemBruta) {
-  recentes.push(porcentagemBruta);
-  if (recentes.length > 3) recentes.shift();
-
-  // Mediana sempre: um pico isolado (ex.: encostar no sensor) nao aparece.
-  const ordenado = [...recentes].sort((a, b) => a - b);
-  return Math.round(ordenado[Math.floor((ordenado.length - 1) / 2)]);
-}
-
 function carregar() {
   try {
     const bruto = fs.readFileSync(DATA_FILE, 'utf8');
@@ -192,15 +183,14 @@ function salvar() {
 
 // Converte a leitura do ADC (0..4095) em % de umidade.
 // Sensor resistivo: seco = valor alto, molhado = valor baixo.
-function adcParaPorcentagem(adc) {
-  const { calSeco, calUmido } = CONFIG;
+function adcParaPorcentagem(adc, calSeco = CONFIG.calSeco, calUmido = CONFIG.calUmido) {
   if (calSeco === calUmido) return 0;
   const pct = ((adc - calSeco) / (calUmido - calSeco)) * 100;
   return Math.max(0, Math.min(100, Math.round(pct)));
 }
 
-function classificar(porcentagem, idadeMs) {
-  if (idadeMs > CONFIG.offlineMs) {
+function classificar(porcentagem, idadeMs, offlineMs = CONFIG.offlineMs) {
+  if (idadeMs > offlineMs) {
     return {
       level: 'offline',
       label: 'Sem sinal',
@@ -243,7 +233,8 @@ app.post('/api/readings', async (req, res) => {
   }
 
   const porcentagemBruta = adcParaPorcentagem(adc);
-  const porcentagem = suavizar(porcentagemBruta);
+  // O ESP32 ja usa uma media aparada de 31 amostras; nao filtrar outra vez aqui.
+  const porcentagem = porcentagemBruta;
   const leitura = {
     ts: Date.now(),
     adc: Math.round(adc),
@@ -292,14 +283,13 @@ app.get('/api/status', async (req, res) => {
   if (admin) {
     const { data, error } = await admin.from('prototype_readings')
       .select('moisture_percent,adc,device,rssi,recorded_at')
-      .gte('recorded_at', new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString())
-      .order('recorded_at', { ascending: true })
-      .limit(CONFIG.maxHistory);
+      .order('recorded_at', { ascending: false })
+      .limit(limite);
     if (error) {
       console.error('Prototype history read failed:', error.message);
       return res.status(503).json({ error: 'Historico demonstrativo indisponivel.' });
     }
-    source = (data || []).map((row) => ({
+    source = (data || []).reverse().map((row) => ({
       ts: new Date(row.recorded_at).getTime(),
       percent: row.moisture_percent,
       adc: row.adc,
@@ -309,12 +299,13 @@ app.get('/api/status', async (req, res) => {
   }
   const ultima = source[source.length - 1] || null;
   const idade = ultima ? Date.now() - ultima.ts : Infinity;
+  const online = idade < CONFIG.demoOfflineMs;
 
   res.json({
     latest: ultima,
-    online: idade < CONFIG.offlineMs,
+    online,
     status: ultima
-      ? classificar(ultima.percent, idade)
+      ? classificar(ultima.percent, idade, CONFIG.demoOfflineMs)
       : { level: 'offline', label: 'Sem dados', advice: 'Ligue o ESP32 para comecar.' },
     thresholds: { min: CONFIG.min, critical: CONFIG.critical },
     calibration: { seco: CONFIG.calSeco, umido: CONFIG.calUmido },

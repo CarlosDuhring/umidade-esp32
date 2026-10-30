@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#f7f7f5" />
     <title>Acessar · PlantSpace</title>
-    <link rel="stylesheet" href="/plantspace.css?v=1" />
+    <link rel="stylesheet" href="/plantspace.css?v=4" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="/config.js" defer></script>
     <script src="/auth.js?v=1" defer></script>
@@ -22,11 +22,22 @@
           <button class="auth-tab" id="signupTab" type="button" role="tab" aria-selected="false" data-mode="signup">Criar conta</button>
         </div>
         <form id="authForm" class="form-stack">
-          <label id="nameField" class="field" hidden>Nome<input id="fullName" name="name" autocomplete="name" /></label>
-          <label class="field">E-mail<input id="email" name="email" type="email" autocomplete="email" required /></label>
-          <label class="field">Senha<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
-          <label id="phoneField" class="field" hidden>WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+5511999999999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /></label>
+          <div id="signupProgress" class="step-progress" hidden><span id="signupProgressFill"></span></div>
+          <p id="signupStepLabel" class="step-label" hidden>ETAPA 1 DE 2</p>
+          <div id="signupStepOne" class="form-stack" hidden>
+            <label id="nameField" class="field">Nome completo<input id="fullName" name="name" autocomplete="name" /></label>
+            <label id="phoneField" class="field">WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+5511999999999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /></label>
+          </div>
+          <div id="signupStepTwo" class="form-stack" hidden>
+            <label class="field">E-mail<input id="signupEmail" name="signupEmail" type="email" autocomplete="email" /></label>
+            <label class="field">Senha<input id="signupPassword" name="signupPassword" type="password" autocomplete="new-password" minlength="8" /></label>
+          </div>
+          <div id="loginFields" class="form-stack">
+            <label class="field">E-mail<input id="email" name="email" type="email" autocomplete="email" required /></label>
+            <label class="field">Senha<input id="password" name="password" type="password" autocomplete="current-password" minlength="8" required /></label>
+          </div>
           <p id="phoneNote" class="field-note" hidden>O número ficará salvo para uma futura integração. O envio pelo WhatsApp ainda não está ativo.</p>
+          <div id="signupNavigation" class="step-actions" hidden><button id="signupBack" class="button button-quiet" type="button">Voltar</button><button id="signupNext" class="button button-primary" type="button">Continuar</button></div>
           <button id="submitAuth" class="button button-primary button-wide" type="submit">Entrar</button>
           <p id="authMessage" class="form-message" role="status" aria-live="polite"></p>
         </form>

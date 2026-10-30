@@ -1,4 +1,4 @@
-<!doctype html>
+﻿<!doctype html>
 <html lang="pt-BR">
   <head>
     <meta charset="utf-8" />
@@ -6,10 +6,10 @@
     <meta name="theme-color" content="#f7f7f5" />
     <meta name="description" content="Acompanhe a umidade das suas plantas e saiba quando é hora de regar." />
     <title>PlantSpace · Cuidado conectado para suas plantas</title>
-    <link rel="stylesheet" href="/plantspace.css?v=1" />
+    <link rel="stylesheet" href="/plantspace.css?v=4" />
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <script src="/config.js" defer></script>
-    <script src="/landing.js?v=1" defer></script>
+    <script src="/landing.js?v=3" defer></script>
   </head>
   <body>
     <header class="site-header">
@@ -42,6 +42,7 @@
             <div class="demo-reading-top"><div><span class="tiny-label">VASO DE DEMONSTRAÇÃO</span><h3 id="demoDevice" class="demo-plant-name">Sensor do protótipo</h3></div><span id="demoStatus" class="demo-status is-offline">Carregando</span></div>
             <div><p class="demo-percent"><span id="demoPercent">--</span><small>%</small></p><div class="meter"><span id="demoMeter" style="width:0%"></span></div><p id="demoAdvice" class="muted">Buscando a última medição.</p></div>
             <div class="demo-details"><div class="detail-item"><span>ADC bruto</span><strong id="demoAdc">--</strong></div><div class="detail-item"><span>Sinal WiFi</span><strong id="demoRssi">--</strong></div><div class="detail-item"><span>Última leitura</span><strong id="demoAge">--</strong></div></div>
+            <p class="field-note demo-calibration-note">O percentual é relativo à calibração deste protótipo, não uma medida universal do solo. Para calibrar este vaso, compare o ADC com o solo seco e depois de regar bem.</p>
           </article>
           <article class="surface demo-chart"><div class="demo-reading-top"><div><span class="tiny-label">HISTÓRICO DO PROTÓTIPO</span><p class="muted">Leituras recebidas pelo ESP32</p></div><button id="refreshDemo" class="button button-quiet" type="button" aria-label="Atualizar demonstração">Atualizar</button></div><div class="chart-box"><canvas id="demoChart"></canvas><p id="demoChartEmpty" class="chart-empty" hidden>Aguardando as primeiras leituras do ESP32.</p></div></article>
         </div>

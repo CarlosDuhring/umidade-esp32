@@ -19,6 +19,8 @@ create table if not exists public.plants (
   species text not null check (char_length(species) between 1 and 60),
   location text not null check (char_length(location) between 1 and 80),
   threshold_percent integer not null default 35 check (threshold_percent between 1 and 99),
+  adc_dry integer not null default 2500 check (adc_dry between 0 and 4095),
+  adc_wet integer not null default 1250 check (adc_wet between 0 and 4095),
   sensor_id uuid,
   alert_repeat_hours integer not null default 12 check (alert_repeat_hours between 1 and 168),
   last_low_alert_at timestamptz,
@@ -122,6 +124,7 @@ create table if not exists public.notification_preferences (
   low_moisture_enabled boolean not null default true,
   normal_again_enabled boolean not null default true,
   sensor_offline_enabled boolean not null default true,
+  alert_repeat_hours integer not null default 12 check (alert_repeat_hours between 1 and 168),
   created_at timestamptz not null default now(),
   updated_at timestamptz not null default now()
 );
