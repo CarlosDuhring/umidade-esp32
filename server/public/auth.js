@@ -78,8 +78,8 @@ function nextSignupStep() {
     const name = document.getElementById('fullName');
     const phone = document.getElementById('phone');
     if (!name.reportValidity() || !phone.reportValidity()) return;
-    if (!/^\+[1-9]\d{7,14}$/.test(phone.value.trim())) {
-      showMessage('Informe o WhatsApp com código do país, por exemplo +5511999999999.', 'is-error');
+    if (!window.PlantSpacePhone?.toE164(phone.value)) {
+      showMessage('Informe o WhatsApp com DDD e número.', 'is-error');
       phone.focus();
       return;
     }
@@ -138,7 +138,7 @@ document.getElementById('authForm').addEventListener('submit', async (event) => 
   try {
     if (authMode === 'signup') {
       const name = document.getElementById('fullName').value.trim();
-      const phone = document.getElementById('phone').value.trim();
+      const phone = window.PlantSpacePhone?.toE164(document.getElementById('phone').value) || '';
       const { data, error } = await authClient.auth.signUp({
         email,
         password,

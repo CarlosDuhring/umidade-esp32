@@ -348,7 +348,7 @@ app.post('/api/reservations', async (req, res) => {
   if (rawWhatsapp) {
     const digits = rawWhatsapp.replace(/\D/g, '');
     if (digits.length < 8 || digits.length > 15) return res.status(400).json({ error: 'Informe um WhatsApp valido.' });
-    whatsapp = `+${digits}`;
+    whatsapp = digits.length === 10 || digits.length === 11 ? `+55${digits}` : `+${digits}`;
   }
 
   const admin = supabaseAdmin();

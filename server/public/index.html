@@ -11,17 +11,18 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="image" href="/assets/sensor-final-angle.jpg" />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/plantspace.css?v=13" />
+    <link rel="stylesheet" href="/plantspace.css?v=14" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <script src="/config.js" defer></script>
-    <script src="/landing.js?v=10" defer></script>
+    <script src="/phone-format.js?v=1" defer></script>
+<script src="/landing.js?v=11" defer></script>
   </head>
   <body class="landing-page">
     <div class="scroll-progress" aria-hidden="true"></div>
     <header class="site-header landing-header">
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
-      <nav class="site-nav" aria-label="Navegação principal">
+      <nav class="site-nav" id="siteNav" aria-label="Navegação principal">
         <a href="#sensor">O sensor</a>
         <a href="#demo">Demonstração</a>
         <a href="#como-funciona">Como funciona</a>
@@ -30,6 +31,7 @@
       <div class="header-actions">
         <a class="button button-secondary" href="/login.html?mode=login">Entrar</a>
         <a class="button button-primary" href="#planos">Reservar</a>
+        <button class="nav-toggle" id="navToggle" type="button" aria-label="Abrir menu" aria-controls="siteNav" aria-expanded="false"><span></span><span></span></button>
       </div>
     </header>
 
@@ -54,7 +56,7 @@
           <div class="model-stage" id="modelStage">
             <div class="stage-topline">
               <span class="prototype-tag"><span class="live-dot"></span> PROTÓTIPO<span class="prototype-extra"> EM TEMPO REAL</span></span>
-              <span class="stage-index">CONCEITO · 01</span>
+              <span class="stage-index">ARRASTE PARA GIRAR</span>
             </div>
             <div class="stage-glow" aria-hidden="true"></div>
             <div class="stage-ring" aria-hidden="true"></div>
@@ -72,6 +74,8 @@
               shadow-softness="0.85"
               loading="eager"
               reveal="auto"
+              camera-controls
+              touch-action="pan-y"
               disable-zoom
               interaction-prompt="none"
             ></model-viewer>
@@ -95,7 +99,7 @@
 
             <div class="scroll-cue" aria-hidden="true"><span>Role para explorar</span><i></i></div>
           </div>
-          <p class="model-disclaimer">Modelo 3D conceitual · o protótipo funcional está na demonstração abaixo.</p>
+          <p class="model-disclaimer">Arraste o modelo para girar. Conceito visual &mdash; o prot&oacute;tipo funcional est&aacute; na demonstra&ccedil;&atilde;o abaixo.</p>
         </div>
       </section>
 
@@ -339,7 +343,12 @@
 
     <footer class="landing-footer">
       <div class="landing-footer-inner shell">
-        <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a><p>Um jeito mais atento de cuidar das plantas que dividem o seu espaço.</p></div>
+        <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a><p>Um jeito mais atento de cuidar das plantas que dividem o seu espaço.</p>
+          <div class="footer-qr">
+            <a class="footer-qr-image" href="/assets/plantspace-qr.png" target="_blank" rel="noopener" aria-label="Abrir o QR code do PlantSpace"><img src="/assets/plantspace-qr.png" alt="QR code para abrir o site PlantSpace no celular" width="112" height="112" loading="lazy" /></a>
+            <div><span>ABRIR NO CELULAR</span><p>Aponte a câmera para abrir o site.</p><a class="footer-qr-download" href="/assets/plantspace-qr.png" download="plantspace-qr.png">Baixar QR code</a></div>
+          </div>
+        </div>
         <div class="footer-column"><span>EXPLORE</span><a href="#sensor">O sensor</a><a href="#demo">Demonstração</a><a href="#como-funciona">Como funciona</a><a href="#planos">Planos</a></div>
         <div class="footer-column"><span>CONTA</span><a href="/login.html?mode=login">Entrar</a><a href="/login.html?mode=signup">Criar conta</a><a href="#planos">Reservar um kit</a></div>
         <div class="footer-column"><span>PROJETO</span><p>MVP em desenvolvimento.<br />Feito com ESP32, solo e curiosidade.</p></div>
@@ -362,7 +371,7 @@
         <div class="reserve-summary"><span>Plano escolhido</span><strong id="reservePlanLabel">PlantSpace Casa · 3 sensores</strong></div>
         <label class="field">Seu nome<input id="reserveName" name="name" autocomplete="name" minlength="2" maxlength="80" required placeholder="Como podemos te chamar?" /></label>
         <label class="field">Seu e-mail<input id="reserveEmail" name="email" type="email" autocomplete="email" maxlength="254" required placeholder="voce@exemplo.com" /></label>
-        <label class="field">WhatsApp <span class="field-optional">(opcional)</span><input id="reserveWhatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" placeholder="+55 11 99999-9999" /></label>
+        <label class="field">WhatsApp <span class="field-optional">(opcional)</span><input id="reserveWhatsapp" name="whatsapp" type="tel" inputmode="tel" autocomplete="tel" maxlength="20" data-phone-br placeholder="(11) 99999-9999" /></label>
         <p id="reserveMessage" class="form-message" role="status" aria-live="polite"></p>
         <div class="dialog-actions"><button id="cancelReserve" class="button button-quiet" type="button">Agora não</button><button id="reserveSubmit" class="button button-primary" type="submit">Entrar na lista</button></div>
         <p class="reserve-privacy">Usamos seus dados apenas para contato sobre o lançamento do PlantSpace.</p>

@@ -8,7 +8,8 @@
     <link rel="stylesheet" href="/plantspace.css?v=6" />
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2" defer></script>
     <script src="/config.js" defer></script>
-    <script src="/auth.js?v=2" defer></script>
+    <script src="/phone-format.js?v=1" defer></script>
+<script src="/auth.js?v=3" defer></script>
   </head>
   <body class="auth-page">
     <header class="auth-header">
@@ -25,7 +26,7 @@
         <form id="authForm" class="form-stack">
           <div id="signupStepOne" class="form-stack" hidden>
             <label id="nameField" class="field">Seu nome<input id="fullName" name="name" autocomplete="name" minlength="2" maxlength="80" placeholder="Ex.: Ana Silva" /></label>
-            <label id="phoneField" class="field">WhatsApp com código do país<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="+55 11 99999-9999" pattern="^\+[1-9][0-9]{7,14}$" title="Use o formato internacional, por exemplo +5511999999999." /><span class="field-hint">Exemplo: +55 seguido do DDD e do número.</span></label>
+            <label id="phoneField" class="field">WhatsApp<input id="phone" name="phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(11) 99999-9999" maxlength="20" data-phone-br /><span class="field-hint">DDD + número, sem o +55.</span></label>
           </div>
           <div id="signupStepTwo" class="form-stack" hidden>
             <label class="field">Seu e-mail<input id="signupEmail" name="signupEmail" type="email" autocomplete="email" placeholder="voce@exemplo.com" /></label>

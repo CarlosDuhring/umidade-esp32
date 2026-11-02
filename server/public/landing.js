@@ -168,31 +168,15 @@ function setupHeroModel() {
     if (!viewer.loaded) markError();
   }, 12000);
 
-  let yaw = 31;
-  let pitch = 73;
-  let zoom = 112;
-  let autoYaw = 0;
-  let pointerYaw = 0;
-  let pointerPitch = 0;
-  let stageVisible = true;
-  let lastPaint = 0;
-  let lastTick = 0;
-
-  const paint = () => {
-    viewer.setAttribute('camera-orbit', `${yaw.toFixed(2)}deg ${pitch.toFixed(2)}deg ${zoom.toFixed(2)}%`);
+  const updateProgress = () => {
+    const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(520, window.innerHeight * .58)));
+    stage.style.setProperty('--model-progress', progress.toFixed(3));
   };
+  updateProgress();
+  window.addEventListener('scroll', updateProgress, { passive: true });
+  window.addEventListener('resize', updateProgress);
 
-  stage.addEventListener('pointermove', (event) => {
-    if (event.pointerType && event.pointerType !== 'mouse') return;
-    const rect = stage.getBoundingClientRect();
-    pointerYaw = ((event.clientX - rect.left) / rect.width - .5) * 2;
-    pointerPitch = ((event.clientY - rect.top) / rect.height - .5) * 2;
-  });
-  stage.addEventListener('pointerleave', () => {
-    pointerYaw = 0;
-    pointerPitch = 0;
-  });
-
+  let stageVisible = true;
   if ('IntersectionObserver' in window) {
     const observer = new IntersectionObserver(([entry]) => {
       stageVisible = entry.isIntersecting;
@@ -200,29 +184,32 @@ function setupHeroModel() {
     observer.observe(stage);
   }
 
-  function frame(now) {
-    const delta = lastTick ? Math.min(64, now - lastTick) : 16;
-    lastTick = now;
-    if (!document.hidden && stageVisible) {
-      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(520, window.innerHeight * .58)));
-      const motionScale = reduceMotion.matches ? .35 : 1;
-      autoYaw += delta * .022 * motionScale;
-      stage.style.setProperty('--model-progress', progress.toFixed(3));
-      const idle = Math.sin(now / 2700) * 3.4 * (1 - progress) * motionScale;
-      const targetYaw = 31 + progress * 152 * motionScale + autoYaw + pointerYaw * 6 + idle;
-      const targetPitch = 73 - progress * 14 * motionScale - pointerPitch * 3.5;
-      const targetZoom = 112 + progress * 3 * motionScale;
-      yaw += (targetYaw - yaw) * .12;
-      pitch += (targetPitch - pitch) * .12;
-      zoom += (targetZoom - zoom) * .12;
-      if (now - lastPaint > 20) {
-        paint();
-        lastPaint = now;
+  let resumeAutoAt = 0;
+  let lastFrame = 0;
+  const pauseAuto = () => {
+    resumeAutoAt = Date.now() + 5000;
+    stage.classList.add('is-model-interacting');
+  };
+  viewer.addEventListener('pointerdown', pauseAuto, { passive: true });
+  viewer.addEventListener('wheel', pauseAuto, { passive: true });
+  window.addEventListener('pointerup', () => {
+    window.setTimeout(() => stage.classList.remove('is-model-interacting'), 600);
+  }, { passive: true });
+
+  function autoRotate(now) {
+    const delta = lastFrame ? Math.min(64, now - lastFrame) : 16;
+    lastFrame = now;
+    if (!document.hidden && stageVisible && viewer.loaded && Date.now() > resumeAutoAt) {
+      const orbit = viewer.getCameraOrbit();
+      if (orbit) {
+        const speed = reduceMotion.matches ? .045 : .14;
+        const theta = orbit.theta + (speed * delta) / 1000;
+        viewer.setAttribute('camera-orbit', `${theta}rad ${orbit.phi}rad 112%`);
       }
     }
-    window.requestAnimationFrame(frame);
+    window.requestAnimationFrame(autoRotate);
   }
-  window.requestAnimationFrame(frame);
+  window.requestAnimationFrame(autoRotate);
 }
 setupHeroModel();
 
@@ -329,6 +316,25 @@ if ('IntersectionObserver' in window) {
 // ---------------------------------------------------------------
 const landingHeader = document.querySelector('.landing-header');
 const mobileReserveBar = document.querySelector('.mobile-reserve-bar');
+const navToggle = document.getElementById('navToggle');
+const siteNav = document.getElementById('siteNav');
+const setMobileMenu = (open) => {
+  if (!landingHeader || !navToggle) return;
+  landingHeader.classList.toggle('is-menu-open', open);
+  navToggle.setAttribute('aria-expanded', String(open));
+  navToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+};
+navToggle?.addEventListener('click', () => {
+  setMobileMenu(!landingHeader?.classList.contains('is-menu-open'));
+});
+siteNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', () => setMobileMenu(false)));
+document.addEventListener('keydown', (event) => {
+  if (event.key === 'Escape') setMobileMenu(false);
+});
+window.matchMedia('(min-width: 901px)').addEventListener('change', (event) => {
+  if (event.matches) setMobileMenu(false);
+});
+
 const updateHeader = () => {
   if (landingHeader) landingHeader.classList.toggle('is-scrolled', window.scrollY > 10);
   if (mobileReserveBar) {
@@ -342,6 +348,15 @@ const updateHeader = () => {
 updateHeader();
 window.addEventListener('scroll', updateHeader, { passive: true });
 
+const scrollToSection = (target) => {
+  const heading = target.querySelector('h1, h2') || target;
+  const animatedParent = heading.closest('.scroll-anim');
+  const revealOffset = animatedParent && !animatedParent.classList.contains('is-inview') ? 20 : 0;
+  const headerOffset = (landingHeader?.offsetHeight || 0) + 24 + revealOffset;
+  const top = Math.max(0, window.scrollY + heading.getBoundingClientRect().top - headerOffset);
+  window.scrollTo({ top, left: 0, behavior: reduceMotion.matches ? 'auto' : 'smooth' });
+};
+
 document.querySelectorAll('a[href^="#"]').forEach((link) => {
   link.addEventListener('click', (event) => {
     const id = link.getAttribute('href');
@@ -349,7 +364,8 @@ document.querySelectorAll('a[href^="#"]').forEach((link) => {
     const target = document.querySelector(id);
     if (!target) return;
     event.preventDefault();
-    target.scrollIntoView({ behavior: reduceMotion.matches ? 'auto' : 'smooth', block: 'start' });
+    setMobileMenu(false);
+    scrollToSection(target);
     history.replaceState(null, '', id);
   });
 });
@@ -459,13 +475,13 @@ function setupReservations() {
 
     let whatsapp = null;
     if (rawWhatsapp) {
-      const digits = rawWhatsapp.replace(/\D/g, '');
-      if (digits.length < 8 || digits.length > 15) {
-        setMessage('Confira o WhatsApp ou deixe o campo em branco.', 'error');
+      const normalized = window.PlantSpacePhone?.toE164(rawWhatsapp) || '';
+      if (!normalized) {
+        setMessage('Informe o WhatsApp com DDD e número, ou deixe em branco.', 'error');
         whatsappInput?.focus();
         return;
       }
-      whatsapp = `+${digits}`;
+      whatsapp = normalized;
     }
 
     [nameInput, emailInput, whatsappInput, submit].forEach((element) => {
