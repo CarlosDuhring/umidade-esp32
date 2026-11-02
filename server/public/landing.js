@@ -255,7 +255,7 @@ setupHeroParallax();
 // Animações de entrada guiadas pelo scroll
 // ---------------------------------------------------------------
 const scrollAnimated = new Set();
-if ('IntersectionObserver' in window && !reduceMotion.matches) {
+if ('IntersectionObserver' in window) {
   const animObserver = new IntersectionObserver((entries, observer) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;

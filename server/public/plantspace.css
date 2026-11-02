@@ -743,3 +743,17 @@ html.is-dialog-open { overflow: hidden; }
   .stage-ring { display: none; }
   .scroll-progress { display: none; }
 }
+
+/* Mantem o movimento de leitura mesmo quando o sistema pede menos animacao:
+   revelacoes curtas, sem parallax e sem deslocamentos laterais grandes. */
+@media (prefers-reduced-motion: reduce) {
+  .landing-page .scroll-anim {
+    opacity: 0;
+    transform: translate3d(0, 18px, 0) !important;
+    transition: opacity .45s var(--ease-maison), transform .45s var(--ease-maison) !important;
+    transition-delay: var(--scroll-delay, 0ms) !important;
+  }
+  .landing-page .scroll-anim.is-left { transform: translate3d(-14px, 0, 0) !important; }
+  .landing-page .scroll-anim.is-right { transform: translate3d(14px, 0, 0) !important; }
+  .landing-page .scroll-anim.is-inview { opacity: 1; transform: translate3d(0, 0, 0) !important; }
+}
