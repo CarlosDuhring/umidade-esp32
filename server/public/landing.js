@@ -185,7 +185,7 @@ function setupHeroModel() {
   }
 
   let resumeAutoAt = 0;
-  let lastFrame = 0;
+  let lastAutoPaint = 0;
   const pauseAuto = () => {
     resumeAutoAt = Date.now() + 5000;
     stage.classList.add('is-model-interacting');
@@ -197,14 +197,14 @@ function setupHeroModel() {
   }, { passive: true });
 
   function autoRotate(now) {
-    const delta = lastFrame ? Math.min(64, now - lastFrame) : 16;
-    lastFrame = now;
-    if (!document.hidden && stageVisible && viewer.loaded && Date.now() > resumeAutoAt) {
+    if (!document.hidden && stageVisible && viewer.loaded && Date.now() > resumeAutoAt && now - lastAutoPaint > 32) {
       const orbit = viewer.getCameraOrbit();
       if (orbit) {
+        const elapsed = lastAutoPaint ? Math.min(.12, (now - lastAutoPaint) / 1000) : .032;
         const speed = reduceMotion.matches ? .045 : .14;
-        const theta = orbit.theta + (speed * delta) / 1000;
+        const theta = orbit.theta + speed * elapsed;
         viewer.setAttribute('camera-orbit', `${theta}rad ${orbit.phi}rad 112%`);
+        lastAutoPaint = now;
       }
     }
     window.requestAnimationFrame(autoRotate);
