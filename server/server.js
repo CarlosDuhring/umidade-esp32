@@ -318,6 +318,59 @@ app.get('/api/status', async (req, res) => {
   });
 });
 
+// Reservas de intencao do primeiro lote. Nao processa pagamento.
+const reservationAttempts = new Map();
+app.post('/api/reservations', async (req, res) => {
+  const forwarded = String(req.get('x-forwarded-for') || '').split(',')[0].trim();
+  const ip = forwarded || req.ip || req.socket.remoteAddress || 'unknown';
+  const now = Date.now();
+  const windowMs = 10 * 60 * 1000;
+  const recent = (reservationAttempts.get(ip) || []).filter((stamp) => now - stamp < windowMs);
+  if (recent.length >= 10) return res.status(429).json({ error: 'Muitas tentativas. Tente novamente em alguns minutos.' });
+  recent.push(now);
+  reservationAttempts.set(ip, recent);
+  if (reservationAttempts.size > 2000) {
+    for (const [key, stamps] of reservationAttempts) {
+      if (!stamps.some((stamp) => now - stamp < windowMs)) reservationAttempts.delete(key);
+    }
+  }
+
+  const name = String(req.body?.name || '').trim().replace(/\s+/g, ' ');
+  const email = String(req.body?.email || '').trim().toLowerCase();
+  const rawWhatsapp = String(req.body?.whatsapp || '').trim();
+  const plan = String(req.body?.plan || 'casa');
+
+  if (name.length < 2 || name.length > 80) return res.status(400).json({ error: 'Informe um nome valido.' });
+  if (email.length > 254 || !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(email)) return res.status(400).json({ error: 'Informe um e-mail valido.' });
+  if (!['one', 'casa', 'horta'].includes(plan)) return res.status(400).json({ error: 'Plano invalido.' });
+
+  let whatsapp = null;
+  if (rawWhatsapp) {
+    const digits = rawWhatsapp.replace(/\D/g, '');
+    if (digits.length < 8 || digits.length > 15) return res.status(400).json({ error: 'Informe um WhatsApp valido.' });
+    whatsapp = `+${digits}`;
+  }
+
+  const admin = supabaseAdmin();
+  if (!admin) return res.status(503).json({ error: 'Lista de reservas ainda nao configurada.' });
+
+  try {
+    const { error } = await admin.from('product_reservations').upsert({
+      name,
+      email,
+      whatsapp,
+      plan,
+      source: 'landing',
+      updated_at: new Date().toISOString(),
+    }, { onConflict: 'email' });
+    if (error) throw error;
+    res.status(201).json({ ok: true });
+  } catch (error) {
+    console.error('Reservation insert failed:', error.message);
+    res.status(500).json({ error: 'Nao foi possivel registrar a reserva agora.' });
+  }
+});
+
 app.get('/api/health', (req, res) => {
   res.json({ ok: true, leituras: readings.length, uptime: process.uptime() });
 });
