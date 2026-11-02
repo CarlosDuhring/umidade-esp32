@@ -11,13 +11,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="image" href="/assets/sensor-final-angle.jpg" />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/plantspace.css?v=10" />
+    <link rel="stylesheet" href="/plantspace.css?v=11" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <script src="/config.js" defer></script>
-    <script src="/landing.js?v=7" defer></script>
+    <script src="/landing.js?v=8" defer></script>
   </head>
   <body class="landing-page">
+    <div class="scroll-progress" aria-hidden="true"></div>
     <header class="site-header landing-header">
       <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
       <nav class="site-nav" aria-label="Navegação principal">
@@ -52,7 +53,7 @@
         <div class="product-hero-visual">
           <div class="model-stage" id="modelStage">
             <div class="stage-topline">
-              <span class="prototype-tag"><span class="live-dot"></span> PROTÓTIPO EM TEMPO REAL</span>
+              <span class="prototype-tag"><span class="live-dot"></span> PROTÓTIPO<span class="prototype-extra"> EM TEMPO REAL</span></span>
               <span class="stage-index">CONCEITO · 01</span>
             </div>
             <div class="stage-glow" aria-hidden="true"></div>
@@ -105,7 +106,7 @@
         </div>
       </div>
 
-      <section id="demo" class="demo-section shell landing-demo" data-reveal>
+      <section id="demo" class="demo-section shell landing-demo">
         <div class="section-heading">
           <div>
             <p class="eyebrow">DEMONSTRAÇÃO PÚBLICA · DADOS REAIS</p>
@@ -140,7 +141,7 @@
         <p class="demo-footnote">A conta gratuita é separada desta demonstração: seus vasos, leituras e alertas ficam privados no seu login.</p>
       </section>
 
-      <section id="sensor" class="sensor-story shell" data-reveal>
+      <section id="sensor" class="sensor-story shell">
         <div class="story-intro">
           <div>
             <p class="eyebrow">O PRODUTO</p>
@@ -169,36 +170,31 @@
         </dl>
       </section>
 
-      <section class="evolution-section" data-reveal>
+      <section class="evolution-section">
         <div class="shell">
           <div class="story-intro">
             <div>
-              <p class="eyebrow">DO PROTÓTIPO AO PRODUTO</p>
-              <h2>Primeiro veio a sonda.<br />Depois, o objeto.</h2>
+              <p class="eyebrow">CONCEITO FINAL · 2026</p>
+              <h2>Um objeto, não<br />um experimento.</h2>
             </div>
-            <p class="story-lead">A mesma pergunta guiou as duas fases: como fazer uma planta pedir água de um jeito que a gente entenda? O caminho saiu da bancada e chegou a um conceito que dá vontade de deixar à vista.</p>
+            <p class="story-lead">O conceito reúne a eletrônica, a luz e as hastes em uma presença discreta, feita para ficar no vaso — não escondida atrás dele.</p>
           </div>
-          <div class="evolution-grid">
-            <article class="evolution-card">
-              <div class="evolution-gallery early">
-                <img src="/assets/sensor-early-front.jpg" alt="Protótipo inicial com sensor capacitivo de bancada e fios aparentes" loading="lazy" />
-                <img src="/assets/sensor-early-detail.jpg" alt="Vista inclinada do protótipo inicial" loading="lazy" />
-              </div>
-              <div class="evolution-copy"><span class="phase-tag">FASE 01 · BANCADA</span><h3>O sensor nu e os fios à mostra.</h3><p>O primeiro protótipo provou que a leitura funcionava. A eletrônica ficava exposta e cada conexão contava uma história de teste.</p></div>
-            </article>
-            <article class="evolution-card is-final">
-              <div class="evolution-gallery final">
-                <img src="/assets/sensor-final-front.jpg" alt="Conceito final do sensor PlantSpace" loading="lazy" />
-                <img src="/assets/sensor-final-detail.jpg" alt="Detalhe do conceito final do sensor PlantSpace" loading="lazy" />
-              </div>
-              <div class="evolution-copy"><span class="phase-tag">FASE 02 · CONCEITO</span><h3>Um corpo só. Luz, sonda e presença.</h3><p>O conceito integra a eletrônica, o indicador luminoso e as hastes em um objeto que pode ficar no vaso sem parecer um experimento.</p></div>
-            </article>
-          </div>
-          <p class="evolution-note">As fotos do conceito são renders 3D do produto desejado, não imagens do protótipo funcional.</p>
+          <article class="evolution-feature">
+            <div class="evolution-gallery final">
+              <img src="/assets/sensor-final-front.jpg" alt="Conceito visual do sensor PlantSpace, vista frontal" loading="lazy" />
+              <img src="/assets/sensor-final-detail.jpg" alt="Detalhe do conceito visual do sensor PlantSpace" loading="lazy" />
+            </div>
+            <div class="evolution-copy">
+              <span class="phase-tag">DESIGN · CONCEITO</span>
+              <h3>Um corpo só. Luz, sonda e presença.</h3>
+              <p>O corpo em verde profundo, a tampa translúcida e as hastes formam um objeto silencioso: tecnologia suficiente para cuidar, presença discreta para conviver.</p>
+            </div>
+          </article>
+          <p class="evolution-note">Renders 3D do conceito visual. O protótipo funcional usa ESP32 e sensor de bancada.</p>
         </div>
       </section>
 
-      <section id="como-funciona" class="how-section shell" data-reveal>
+      <section id="como-funciona" class="how-section shell">
         <div class="story-intro">
           <div><p class="eyebrow">COMO FUNCIONA</p><h2>Três passos. Nenhum achismo.</h2></div>
           <p class="story-lead">A instalação é física e simples. A inteligência fica no painel: você vê a leitura, entende a tendência e escolhe quando regar.</p>
@@ -225,7 +221,7 @@
         </div>
       </section>
 
-      <section class="features-section" data-reveal>
+      <section class="features-section">
         <div class="shell">
           <div class="story-intro">
             <div><p class="eyebrow">DENTRO DO PAINEL</p><h2>Seu jardim, com contexto.</h2></div>
@@ -262,7 +258,7 @@
         </div>
       </section>
 
-      <section id="planos" class="pricing-section" data-reveal>
+      <section id="planos" class="pricing-section">
         <div class="shell">
           <div class="pricing-intro">
             <p class="eyebrow">PRIMEIRO LOTE · PRÉ-LANÇAMENTO</p>
@@ -312,7 +308,7 @@
         </div>
       </section>
 
-      <section class="faq-section shell" data-reveal>
+      <section class="faq-section shell">
         <div class="faq-intro">
           <p class="eyebrow">PERGUNTAS DIRETAS</p>
           <h2>Antes de reservar.</h2>
@@ -329,7 +325,7 @@
         </div>
       </section>
 
-      <section class="closing-cta shell" data-reveal>
+      <section class="closing-cta shell">
         <div class="closing-art" aria-hidden="true"><span>✳</span></div>
         <p class="eyebrow">O PRÓXIMO PASSO</p>
         <h2>Antes de adivinhar,<br />ouça.</h2>

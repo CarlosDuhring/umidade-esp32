@@ -205,10 +205,11 @@ function setupHeroModel() {
 
   function frame(now) {
     if (!document.hidden && stageVisible) {
-      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(600, window.innerHeight * .92)));
+      const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(520, window.innerHeight * .58)));
+      stage.style.setProperty('--model-progress', progress.toFixed(3));
       const idle = Math.sin(now / 2700) * 3.4 * (1 - progress);
-      const targetYaw = 31 + progress * 146 + pointerYaw * 6 + idle;
-      const targetPitch = 73 - progress * 12 - pointerPitch * 3.5;
+      const targetYaw = 31 + progress * 152 + pointerYaw * 6 + idle;
+      const targetPitch = 73 - progress * 14 - pointerPitch * 3.5;
       const targetZoom = 112 + progress * 3;
       yaw += (targetYaw - yaw) * .075;
       pitch += (targetPitch - pitch) * .075;
@@ -225,22 +226,74 @@ function setupHeroModel() {
 setupHeroModel();
 
 // ---------------------------------------------------------------
-// Reveals suaves
+// Animações de entrada guiadas pelo scroll
 // ---------------------------------------------------------------
+const scrollAnimated = new Set();
 if ('IntersectionObserver' in window && !reduceMotion.matches) {
-  const revealObserver = new IntersectionObserver((entries, observer) => {
+  const animObserver = new IntersectionObserver((entries, observer) => {
     for (const entry of entries) {
       if (!entry.isIntersecting) continue;
-      entry.target.classList.add('is-visible');
+      entry.target.classList.add('is-inview');
       observer.unobserve(entry.target);
     }
-  }, { threshold: 0.08, rootMargin: '0px 0px -38px 0px' });
-  document.querySelectorAll('[data-reveal]').forEach((element) => {
-    element.classList.add('reveal');
-    revealObserver.observe(element);
-  });
-} else {
-  document.querySelectorAll('[data-reveal]').forEach((element) => element.classList.add('is-visible'));
+  }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+
+  const addScrollAnim = (element, delay) => {
+    if (!element || scrollAnimated.has(element) || element.classList.contains('closing-art')) return;
+    scrollAnimated.add(element);
+    element.classList.add('scroll-anim');
+    if (delay) element.style.setProperty('--scroll-delay', `${delay}ms`);
+    animObserver.observe(element);
+  };
+
+  const staggerGroups = [
+    ['.section-heading', 80],
+    ['.demo-grid', 85],
+    ['.story-intro', 80],
+    ['.story-points', 70],
+    ['.steps-grid', 80],
+    ['.feature-bento', 70],
+    ['.pricing-grid', 90],
+    ['.faq-intro', 80],
+    ['.faq-list', 45],
+    ['.evolution-copy', 80],
+    ['.closing-cta', 75],
+  ];
+  for (const [selector, step] of staggerGroups) {
+    document.querySelectorAll(selector).forEach((group) => {
+      [...group.children].forEach((child, index) => addScrollAnim(child, Math.min(index * step, 360)));
+    });
+  }
+  document.querySelectorAll('.story-showcase, .evolution-feature').forEach((element) => addScrollAnim(element, 0));
+
+  const parallaxItems = [
+    { element: document.querySelector('.story-image img'), strength: 38, scale: 1.06 },
+    { element: document.querySelector('.closing-art'), strength: 54, rotate: -14 },
+  ].filter((item) => item.element);
+
+  let parallaxQueued = false;
+  const updateParallax = () => {
+    parallaxQueued = false;
+    const viewport = window.innerHeight;
+    for (const item of parallaxItems) {
+      const rect = item.element.getBoundingClientRect();
+      if (rect.bottom < -120 || rect.top > viewport + 120) continue;
+      const progress = Math.min(1, Math.max(0, (viewport - rect.top) / (viewport + rect.height)));
+      const shift = (progress - .5) * item.strength;
+      const rotation = item.rotate ? ` rotate(${item.rotate}deg)` : '';
+      const scale = item.scale ? ` scale(${item.scale})` : '';
+      item.element.style.transition = 'none';
+      item.element.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)${rotation}${scale}`;
+    }
+  };
+  const queueParallax = () => {
+    if (parallaxQueued) return;
+    parallaxQueued = true;
+    window.requestAnimationFrame(updateParallax);
+  };
+  window.addEventListener('scroll', queueParallax, { passive: true });
+  window.addEventListener('resize', queueParallax);
+  queueParallax();
 }
 
 // ---------------------------------------------------------------
@@ -254,6 +307,9 @@ const updateHeader = () => {
     const showBar = window.scrollY > window.innerHeight * .8;
     mobileReserveBar.classList.toggle('is-visible', showBar);
   }
+  const scrollable = document.documentElement.scrollHeight - window.innerHeight;
+  const scrollRatio = scrollable > 0 ? Math.min(1, Math.max(0, window.scrollY / scrollable)) : 0;
+  document.documentElement.style.setProperty('--scroll-progress', scrollRatio.toFixed(4));
 };
 updateHeader();
 window.addEventListener('scroll', updateHeader, { passive: true });
