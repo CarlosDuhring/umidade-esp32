@@ -171,19 +171,16 @@ function setupHeroModel() {
   let yaw = 31;
   let pitch = 73;
   let zoom = 112;
+  let autoYaw = 0;
   let pointerYaw = 0;
   let pointerPitch = 0;
   let stageVisible = true;
   let lastPaint = 0;
+  let lastTick = 0;
 
   const paint = () => {
     viewer.setAttribute('camera-orbit', `${yaw.toFixed(2)}deg ${pitch.toFixed(2)}deg ${zoom.toFixed(2)}%`);
   };
-
-  if (reduceMotion.matches) {
-    paint();
-    return;
-  }
 
   stage.addEventListener('pointermove', (event) => {
     if (event.pointerType && event.pointerType !== 'mouse') return;
@@ -204,17 +201,21 @@ function setupHeroModel() {
   }
 
   function frame(now) {
+    const delta = lastTick ? Math.min(64, now - lastTick) : 16;
+    lastTick = now;
     if (!document.hidden && stageVisible) {
       const progress = Math.min(1, Math.max(0, window.scrollY / Math.max(520, window.innerHeight * .58)));
+      const motionScale = reduceMotion.matches ? .35 : 1;
+      autoYaw += delta * .022 * motionScale;
       stage.style.setProperty('--model-progress', progress.toFixed(3));
-      const idle = Math.sin(now / 2700) * 3.4 * (1 - progress);
-      const targetYaw = 31 + progress * 152 + pointerYaw * 6 + idle;
-      const targetPitch = 73 - progress * 14 - pointerPitch * 3.5;
-      const targetZoom = 112 + progress * 3;
-      yaw += (targetYaw - yaw) * .075;
-      pitch += (targetPitch - pitch) * .075;
-      zoom += (targetZoom - zoom) * .075;
-      if (now - lastPaint > 30) {
+      const idle = Math.sin(now / 2700) * 3.4 * (1 - progress) * motionScale;
+      const targetYaw = 31 + progress * 152 * motionScale + autoYaw + pointerYaw * 6 + idle;
+      const targetPitch = 73 - progress * 14 * motionScale - pointerPitch * 3.5;
+      const targetZoom = 112 + progress * 3 * motionScale;
+      yaw += (targetYaw - yaw) * .12;
+      pitch += (targetPitch - pitch) * .12;
+      zoom += (targetZoom - zoom) * .12;
+      if (now - lastPaint > 20) {
         paint();
         lastPaint = now;
       }
@@ -224,6 +225,31 @@ function setupHeroModel() {
   window.requestAnimationFrame(frame);
 }
 setupHeroModel();
+
+// Parallax do hero no padrão Maison: a imagem desce e some conforme a seção sai.
+function setupHeroParallax() {
+  const hero = document.querySelector('.product-hero');
+  const visual = document.querySelector('.product-hero-visual');
+  if (!hero || !visual || reduceMotion.matches) return;
+  let queued = false;
+  const update = () => {
+    queued = false;
+    const progress = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / Math.max(1, hero.offsetHeight)));
+    const shift = progress * Math.min(88, visual.offsetHeight * .14);
+    const fade = Math.min(1, Math.max(0, (progress - .35) / .45));
+    visual.style.transform = `translate3d(0, ${shift.toFixed(1)}px, 0)`;
+    visual.style.opacity = String((1 - fade).toFixed(3));
+  };
+  const queue = () => {
+    if (queued) return;
+    queued = true;
+    window.requestAnimationFrame(update);
+  };
+  window.addEventListener('scroll', queue, { passive: true });
+  window.addEventListener('resize', queue);
+  update();
+}
+setupHeroParallax();
 
 // ---------------------------------------------------------------
 // Animações de entrada guiadas pelo scroll
@@ -236,35 +262,37 @@ if ('IntersectionObserver' in window && !reduceMotion.matches) {
       entry.target.classList.add('is-inview');
       observer.unobserve(entry.target);
     }
-  }, { threshold: 0.1, rootMargin: '0px 0px -8% 0px' });
+  }, { threshold: 0.05, rootMargin: '0px 0px -100px 0px' });
 
-  const addScrollAnim = (element, delay) => {
+  const addScrollAnim = (element, delay, variant = '') => {
     if (!element || scrollAnimated.has(element) || element.classList.contains('closing-art')) return;
     scrollAnimated.add(element);
     element.classList.add('scroll-anim');
+    if (variant) element.classList.add(variant);
     if (delay) element.style.setProperty('--scroll-delay', `${delay}ms`);
     animObserver.observe(element);
   };
 
   const staggerGroups = [
-    ['.section-heading', 80],
-    ['.demo-grid', 85],
-    ['.story-intro', 80],
-    ['.story-points', 70],
-    ['.steps-grid', 80],
-    ['.feature-bento', 70],
-    ['.pricing-grid', 90],
-    ['.faq-intro', 80],
-    ['.faq-list', 45],
-    ['.evolution-copy', 80],
-    ['.closing-cta', 75],
+    ['.section-heading', 100, 'is-title'],
+    ['.demo-grid', 100, ''],
+    ['.story-intro', 120, 'is-title'],
+    ['.story-points', 90, 'is-right'],
+    ['.steps-grid', 100, ''],
+    ['.feature-bento', 100, ''],
+    ['.pricing-grid', 100, ''],
+    ['.faq-intro', 100, 'is-title'],
+    ['.faq-list', 50, ''],
+    ['.evolution-copy', 100, ''],
+    ['.closing-cta', 90, ''],
   ];
-  for (const [selector, step] of staggerGroups) {
+  for (const [selector, step, variant] of staggerGroups) {
     document.querySelectorAll(selector).forEach((group) => {
-      [...group.children].forEach((child, index) => addScrollAnim(child, Math.min(index * step, 360)));
+      [...group.children].forEach((child, index) => addScrollAnim(child, Math.min(index * step, 400), variant));
     });
   }
-  document.querySelectorAll('.story-showcase, .evolution-feature').forEach((element) => addScrollAnim(element, 0));
+  document.querySelectorAll('.story-showcase').forEach((element) => addScrollAnim(element, 0, 'is-left'));
+  document.querySelectorAll('.evolution-feature').forEach((element) => addScrollAnim(element, 0, 'is-right'));
 
   const parallaxItems = [
     { element: document.querySelector('.story-image img'), strength: 38, scale: 1.06 },
