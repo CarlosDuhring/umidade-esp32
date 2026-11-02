@@ -305,9 +305,10 @@ app.get('/api/status', async (req, res) => {
   const ultima = source[source.length - 1] || null;
   const idade = ultima ? Date.now() - ultima.ts : Infinity;
   const online = idade < CONFIG.demoOfflineMs;
+  const latest = ultima ? { ...ultima, device: 'PlantSpace' } : null;
 
   res.json({
-    latest: ultima,
+    latest,
     online,
     status: ultima
       ? classificar(ultima.percent, idade, CONFIG.demoOfflineMs)

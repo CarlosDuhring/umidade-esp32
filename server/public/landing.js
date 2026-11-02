@@ -89,7 +89,7 @@ async function updateDemo() {
     setText('heroAdc', data.latest?.adc ?? '--');
     setText('demoRssi', data.latest?.rssi == null ? '--' : `${data.latest.rssi} dBm`);
     setText('demoAge', data.latest ? relative(data.latest.ts) : '--');
-    setText('demoDevice', data.latest?.device || 'Sensor do protótipo');
+    setText('demoDevice', 'PlantSpace');
     setText('heroUpdated', data.latest ? `Atualizado ${relative(data.latest.ts)}` : 'Aguardando o ESP32');
 
     const meterWidth = `${Math.max(0, Math.min(100, Number(percent) || 0))}%`;
