@@ -186,6 +186,7 @@ function setupHeroModel() {
 
   let resumeAutoAt = 0;
   let lastAutoPaint = 0;
+  const autoInterval = window.matchMedia('(pointer: coarse)').matches ? 48 : 32;
   const pauseAuto = () => {
     resumeAutoAt = Date.now() + 5000;
     stage.classList.add('is-model-interacting');
@@ -197,7 +198,7 @@ function setupHeroModel() {
   }, { passive: true });
 
   function autoRotate(now) {
-    if (!document.hidden && stageVisible && viewer.loaded && Date.now() > resumeAutoAt && now - lastAutoPaint > 32) {
+    if (!document.hidden && stageVisible && viewer.loaded && Date.now() > resumeAutoAt && now - lastAutoPaint > autoInterval) {
       const orbit = viewer.getCameraOrbit();
       if (orbit) {
         const elapsed = lastAutoPaint ? Math.min(.12, (now - lastAutoPaint) / 1000) : .032;
@@ -318,11 +319,13 @@ const landingHeader = document.querySelector('.landing-header');
 const mobileReserveBar = document.querySelector('.mobile-reserve-bar');
 const navToggle = document.getElementById('navToggle');
 const siteNav = document.getElementById('siteNav');
+let menuScrollY = 0;
 const setMobileMenu = (open) => {
   if (!landingHeader || !navToggle) return;
   landingHeader.classList.toggle('is-menu-open', open);
   navToggle.setAttribute('aria-expanded', String(open));
   navToggle.setAttribute('aria-label', open ? 'Fechar menu' : 'Abrir menu');
+  if (open) menuScrollY = window.scrollY;
 };
 navToggle?.addEventListener('click', () => {
   setMobileMenu(!landingHeader?.classList.contains('is-menu-open'));
@@ -331,9 +334,18 @@ siteNav?.querySelectorAll('a').forEach((link) => link.addEventListener('click', 
 document.addEventListener('keydown', (event) => {
   if (event.key === 'Escape') setMobileMenu(false);
 });
-window.matchMedia('(min-width: 901px)').addEventListener('change', (event) => {
-  if (event.matches) setMobileMenu(false);
+document.addEventListener('pointerdown', (event) => {
+  if (landingHeader?.classList.contains('is-menu-open') && !landingHeader.contains(event.target)) setMobileMenu(false);
 });
+window.addEventListener('scroll', () => {
+  if (landingHeader?.classList.contains('is-menu-open') && Math.abs(window.scrollY - menuScrollY) > 12) setMobileMenu(false);
+}, { passive: true });
+const desktopQuery = window.matchMedia('(min-width: 901px)');
+const closeMenuOnDesktop = (event) => {
+  if (event.matches) setMobileMenu(false);
+};
+if (desktopQuery.addEventListener) desktopQuery.addEventListener('change', closeMenuOnDesktop);
+else if (desktopQuery.addListener) desktopQuery.addListener(closeMenuOnDesktop);
 
 const updateHeader = () => {
   if (landingHeader) landingHeader.classList.toggle('is-scrolled', window.scrollY > 10);
