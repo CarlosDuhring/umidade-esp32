@@ -1,6 +1,6 @@
 const $ = (id) => document.getElementById(id);
 
-const INTERVALO_MS = 5000;
+const INTERVALO_MS = 2000;
 let grafico = null;
 let graficoVisivel = false;
 let ultimaLeituraTs = null;

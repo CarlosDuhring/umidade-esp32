@@ -6,22 +6,22 @@
     <meta name="theme-color" content="#f7f7f5" />
     <meta name="description" content="PlantSpace: sensor de umidade do solo, painel em tempo real, histórico e alertas para cuidar melhor de cada planta." />
     <title>PlantSpace · O cuidado que sua planta não consegue pedir</title>
-    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23101d15'/%3E%3Cpath d='M32 50V30c0-8 6-14 14-14 0 8-6 14-14 14M32 38c0-6-5-11-11-11 0 6 5 11 11 11' fill='none' stroke='%23dce8d9' stroke-width='4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='15' fill='%23101d15'/%3E%3Cpath d='M15 46c0-13.5 9.5-24 27-26.5-.3 16.5-10.4 26-27 26.5Z' fill='%23dce8d9'/%3E%3Cpath d='M13 53c4-10 11.2-17 21.2-21.2' fill='none' stroke='%23dce8d9' stroke-width='4.2' stroke-linecap='round'/%3E%3C/svg%3E" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="preload" as="image" href="/assets/sensor-final-angle.jpg" />
     <link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400..700&family=Instrument+Sans:wght@400;500;600&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="/plantspace.css?v=16" />
+    <link rel="stylesheet" href="/plantspace.css?v=17" />
     <script type="module" src="https://cdn.jsdelivr.net/npm/@google/model-viewer@4.4.0/dist/model-viewer.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js" defer></script>
     <script src="/config.js" defer></script>
     <script src="/phone-format.js?v=1" defer></script>
-<script src="/landing.js?v=14" defer></script>
+<script src="/landing.js?v=15" defer></script>
   </head>
   <body class="landing-page">
     <div class="scroll-progress" aria-hidden="true"></div>
     <header class="site-header landing-header">
-      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a>
+      <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><circle cx="32" cy="32" r="30" fill="currentColor"/><path d="M19 46c0-12.5 8.8-22.1 25-24.5-.3 15.2-9.6 24-25 24.5Z" fill="var(--canvas)"/><path d="M17 51c3.8-9 10.4-15.6 19.6-19.5" fill="none" stroke="var(--canvas)" stroke-width="4" stroke-linecap="round"/></svg></span><span>PlantSpace</span></a>
       <nav class="site-nav" id="siteNav" aria-label="Navegação principal">
         <a href="#sensor">O sensor</a>
         <a href="#demo">Demonstração</a>
@@ -47,7 +47,7 @@
           </div>
           <div class="hero-trust" aria-label="Destaques do produto">
             <div><strong>30 dias</strong><span>de histórico</span></div>
-            <div><strong>10 s</strong><span>entre leituras</span></div>
+            <div><strong>2 s</strong><span>entre leituras</span></div>
             <div><strong>1 painel</strong><span>para todos os vasos</span></div>
           </div>
         </div>
@@ -104,7 +104,7 @@
           </div>
           <div class="demo-meta"><span id="demoDot" class="live-dot"></span><span id="demoUpdated">Conectando ao sensor…</span></div>
         </div>
-        <p class="demo-intro">O ESP32 no vaso de demonstração envia uma medição a cada 10 segundos. O painel abaixo é público e mostra exatamente o que o sensor está lendo.</p>
+        <p class="demo-intro">O ESP32 no vaso de demonstração envia uma medição a cada 2 segundos. O painel abaixo é público e mostra quase em tempo real o que o sensor está lendo.</p>
         <div class="demo-grid">
           <article class="surface demo-reading">
             <div class="demo-reading-top">
@@ -154,7 +154,7 @@
         <dl class="spec-grid">
           <div><dt>Mede</dt><dd>Umidade do solo em % calibrada</dd></div>
           <div><dt>Conecta</dt><dd>Wi-Fi 2,4 GHz</dd></div>
-          <div><dt>Atualiza</dt><dd>A cada 10 segundos no protótipo</dd></div>
+          <div><dt>Atualiza</dt><dd>A cada 2 segundos no protótipo</dd></div>
           <div><dt>Guarda</dt><dd>Histórico de 30 dias</dd></div>
           <div><dt>Avisa</dt><dd>Painel web · WhatsApp em breve</dd></div>
         </dl>
@@ -271,8 +271,8 @@
             <article class="price-card is-featured">
               <div class="price-badge">MELHOR PARA COMEÇAR</div>
               <div class="price-head"><span class="plan-label">CASA VERDE</span><h3>PlantSpace Casa</h3><p>Para quem já tem uma coleção e quer vê-la inteira.</p></div>
-              <p class="price"><small>R$</small>429</p>
-              <p class="price-note">3 sensores · economize na comparação</p>
+              <p class="price"><small>R$</small>249,90</p>
+              <p class="price-note">3 sensores · economize R$ 49,80</p>
               <ul>
                 <li>3 sensores PlantSpace</li>
                 <li>Todos os benefícios do plano One</li>
@@ -283,8 +283,8 @@
             </article>
             <article class="price-card">
               <div class="price-head"><span class="plan-label">HORTA</span><h3>PlantSpace Horta</h3><p>Para quem cultiva em várias janelas, ou em todas.</p></div>
-              <p class="price"><small>R$</small>649</p>
-              <p class="price-note">5 sensores · preço de referência</p>
+              <p class="price"><small>R$</small>399,90</p>
+              <p class="price-note">5 sensores · economize R$ 99,60</p>
               <ul>
                 <li>5 sensores PlantSpace</li>
                 <li>Todos os benefícios do plano Casa</li>
@@ -329,7 +329,7 @@
 
     <footer class="landing-footer">
       <div class="landing-footer-inner shell">
-        <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true">✳</span><span>PlantSpace</span></a><p>Um jeito mais atento de cuidar das plantas que dividem o seu espaço.</p>
+        <div class="footer-brand"><a class="brand" href="/"><span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 64" focusable="false"><circle cx="32" cy="32" r="30" fill="currentColor"/><path d="M19 46c0-12.5 8.8-22.1 25-24.5-.3 15.2-9.6 24-25 24.5Z" fill="var(--canvas)"/><path d="M17 51c3.8-9 10.4-15.6 19.6-19.5" fill="none" stroke="var(--canvas)" stroke-width="4" stroke-linecap="round"/></svg></span><span>PlantSpace</span></a><p>Um jeito mais atento de cuidar das plantas que dividem o seu espaço.</p>
           <div class="footer-qr">
             <a class="footer-qr-image" href="/assets/plantspace-qr.png" target="_blank" rel="noopener" aria-label="Abrir o QR code do PlantSpace"><img src="/assets/plantspace-qr.png" alt="QR code para abrir o site PlantSpace no celular" width="112" height="112" loading="lazy" /></a>
             <div><span>ABRIR NO CELULAR</span><p>Aponte a câmera para abrir o site.</p><a class="footer-qr-download" href="/assets/plantspace-qr.png" download="plantspace-qr.png">Baixar QR code</a></div>
@@ -344,7 +344,7 @@
 
     <div class="mobile-reserve-bar">
       <div><span>PRIMEIRO LOTE</span><strong>a partir de R$ 99,90</strong></div>
-      <button class="button button-primary js-reserve" type="button" data-plan="casa">Reservar</button>
+      <button class="button button-primary js-reserve" type="button" data-plan="one">Reservar</button>
     </div>
 
     <dialog id="reserveDialog" class="dialog reserve-dialog" aria-labelledby="reserveTitle" aria-describedby="reserveIntro">

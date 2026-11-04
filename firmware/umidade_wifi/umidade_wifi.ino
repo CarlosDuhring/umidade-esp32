@@ -27,7 +27,7 @@
 const int PINO_SENSOR = 34;   // ADC1 - funciona junto com o WiFi
 const int LED_STATUS = 2;     // LED azul da placa (GPIO 2)
 
-const unsigned long INTERVALO_ENVIO = 10000;    // 1 leitura a cada 10 s
+const unsigned long INTERVALO_ENVIO = 2000;     // 1 leitura a cada 2 s (quase em tempo real)
 const unsigned long INTERVALO_RECONEXAO = 15000;
 
 unsigned long ultimoEnvio = 0;
@@ -126,8 +126,8 @@ bool enviarLeitura(int adc) {
   WiFiClient clienteSimples;
   WiFiClientSecure clienteSeguro;
 
-  http.setConnectTimeout(30000);
-  http.setTimeout(30000);
+  http.setConnectTimeout(5000);
+  http.setTimeout(5000);
 
   bool iniciou;
   if (url.startsWith("https://")) {

@@ -35,7 +35,8 @@ button, input, select { font: inherit; }
 button { color: inherit; }
 .shell { width: min(var(--page-width), calc(100% - 48px)); min-width: 0; margin-inline: auto; }
 .brand { display: inline-flex; align-items: center; gap: 9px; font-size: 19px; font-weight: 600; color: var(--ink); }
-.brand-mark { color: var(--leaf); font-size: 23px; line-height: 1; }
+.brand-mark { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; width: 26px; height: 26px; color: var(--leaf); }
+.brand-mark svg { display: block; width: 100%; height: 100%; overflow: visible; }
 .site-header, .app-header { min-height: 72px; display: flex; align-items: center; justify-content: space-between; gap: 24px; padding-inline: max(24px, calc((100vw - var(--page-width)) / 2)); background: rgba(255,255,255,.76); border-bottom: 1px solid var(--line); }
 .site-nav, .app-nav, .header-actions, .account-tools { display: flex; align-items: center; gap: 22px; }
 .site-nav a, .app-nav a { color: var(--body); font-size: 14px; }
@@ -515,7 +516,7 @@ html.is-dialog-open { overflow: hidden; }
 .price small { margin: 8px 0 0; color: var(--muted); font-family: var(--landing-ui); font-size: 15px; font-weight: 500; letter-spacing: 0; }
 .price-card.is-featured .price small { color: #a8b5a9; }
 .price-note { margin: 0 0 22px; color: var(--stone); font-size: 10px; }
-.price-card.is-featured .price-note { color: #839886; }
+.price-card.is-featured .price-note { color: #aebdae; }
 .price-card ul { display: grid; gap: 10px; margin: 0 0 30px; padding: 19px 0 0; border-top: 1px solid var(--line); list-style: none; }
 .price-card.is-featured ul { border-top-color: rgba(231,240,228,.14); }
 .price-card li { position: relative; padding-left: 18px; color: var(--body); font-size: 12px; line-height: 1.4; }

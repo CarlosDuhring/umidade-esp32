@@ -54,7 +54,7 @@ Edite `firmware/umidade_wifi/secrets.h`:
 #define WIFI_SENHA "senha-da-rede"
 #define SERVIDOR_URL "http://192.168.1.17:3000/api/readings"  // ou https://SEU-APP.onrender.com/api/readings
 #define API_KEY "troque-esta-chave"
-#define DISPOSITIVO "estufa-senai"
+#define DISPOSITIVO "PlantSpace"
 ```
 
 > **Rede igual:** o ESP32 e o PC precisam estar na **mesma WiFi** para a URL local
@@ -140,7 +140,7 @@ POST /api/readings
 x-api-key: SUA_CHAVE
 Content-Type: application/json
 
-{ "adc": 2412, "device": "estufa-senai", "rssi": -58 }
+{ "adc": 2412, "device": "PlantSpace", "rssi": -58 }
 ```
 
 ```http
@@ -149,7 +149,7 @@ GET /api/status?limit=120
 
 ```json
 {
-  "latest": { "ts": 1760000000000, "adc": 2412, "percent": 33, "device": "estufa-senai", "rssi": -58 },
+  "latest": { "ts": 1760000000000, "adc": 2412, "percent": 33, "device": "PlantSpace", "rssi": -58 },
   "online": true,
   "status": { "level": "warning", "label": "Atencao", "advice": "O solo esta secando. Regue em breve." },
   "thresholds": { "min": 35, "critical": 20 },

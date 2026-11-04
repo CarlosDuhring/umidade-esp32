@@ -377,7 +377,7 @@ async function start() {
   if (!(await ensureSession())) return;
   try {
     await loadPlants();
-    setInterval(() => renderPlants().catch((error) => message(error.message, 'is-error')), 30000);
+    setInterval(() => renderPlants().catch((error) => message(error.message, 'is-error')), 5000);
   } catch (error) { message(error.message || 'Não consegui carregar seus vasos.', 'is-error'); }
 }
 
