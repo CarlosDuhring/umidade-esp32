@@ -3,7 +3,19 @@
 
   const $ = (selector, scope = document) => scope.querySelector(selector);
   const $$ = (selector, scope = document) => Array.from(scope.querySelectorAll(selector));
-  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  const motionRoot = document.documentElement;
+  const motionToggleButtons = $$("[data-motion-toggle]");
+  const motionEnabled = () => !motionRoot.classList.contains("motion-off");
+  const syncMotionControls = () => {
+    const on = motionEnabled();
+    motionToggleButtons.forEach((button) => {
+      button.setAttribute("aria-pressed", String(on));
+      button.setAttribute("aria-label", on ? "Desativar animações" : "Ativar animações");
+      button.title = on ? "Animações ativadas — clique para desativar" : "Animações desativadas — clique para ativar";
+      const state = button.querySelector("[data-motion-state]");
+      if (state) state.textContent = on ? "Ativado" : "Reduzido";
+    });
+  };
   const header = $(".site-header");
   const nav = $("#siteNav");
   const menuToggle = $("#menuToggle");
@@ -18,6 +30,29 @@
     window.clearTimeout(toastTimer);
     toastTimer = window.setTimeout(() => toast.classList.remove("is-visible"), 3600);
   };
+
+  const setMotion = (enabled, persist = true) => {
+    motionRoot.classList.toggle("motion-off", !enabled);
+    if (persist) {
+      try { localStorage.setItem("faceclass:motion", enabled ? "on" : "off"); }
+      catch (error) { /* storage blocked: the choice lasts for this tab */ }
+    }
+    syncMotionControls();
+    if (enabled) {
+      motionRoot.classList.add("motion-replay");
+      void motionRoot.offsetWidth;
+      motionRoot.classList.remove("motion-replay");
+    }
+    updateScroll();
+  };
+  motionToggleButtons.forEach((button) => {
+    button.addEventListener("click", () => {
+      const next = !motionEnabled();
+      setMotion(next);
+      showToast(next ? "Animações ativadas." : "Modo de movimento reduzido ativado.");
+    });
+  });
+  syncMotionControls();
 
   const currentTime = () => {
     const now = new Date();
@@ -42,7 +77,7 @@
       const rect = hero.getBoundingClientRect();
       const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height)));
       hero.style.setProperty("--hero-scroll", progress.toFixed(3));
-      if (reduceMotion.matches) {
+      if (!motionEnabled()) {
         hero.style.setProperty("--hero-y", "0px");
         hero.style.setProperty("--hero-fade", "1");
       } else if (narrowHero.matches && heroStageNode) {
@@ -60,7 +95,7 @@
         hero.style.setProperty("--hero-fade", Math.max(0, 1 - progress / .8).toFixed(3));
       }
     }
-    if (!reduceMotion.matches) {
+    if (motionEnabled()) {
       parallaxItems.forEach((element) => {
         const rect = element.getBoundingClientRect();
         if (rect.bottom < -160 || rect.top > window.innerHeight + 160) return;
@@ -122,7 +157,7 @@
       setMenu(false);
       const headerHeight = header?.getBoundingClientRect().height || 78;
       const top = target.getBoundingClientRect().top + window.scrollY - headerHeight - 18;
-      window.scrollTo({ top, behavior: reduceMotion.matches ? "auto" : "smooth" });
+      window.scrollTo({ top, behavior: motionEnabled() ? "smooth" : "auto" });
       if (history.replaceState) history.replaceState(null, "", hash);
     });
   });
@@ -149,7 +184,7 @@
     const suffix = element.dataset.suffix || "";
     if (!Number.isFinite(target)) return;
     element.dataset.counted = "true";
-    if (reduceMotion.matches) {
+    if (!motionEnabled()) {
       element.textContent = `${target}${suffix}`;
       return;
     }
@@ -197,8 +232,9 @@
 
   /* Subtle 3D tilt on the hero product */
   const heroStage = $("#heroStage");
-  if (heroStage && !reduceMotion.matches && window.matchMedia("(pointer: fine)").matches) {
+  if (heroStage && window.matchMedia("(pointer: fine)").matches) {
     heroStage.addEventListener("pointermove", (event) => {
+      if (!motionEnabled()) return;
       const rect = heroStage.getBoundingClientRect();
       const x = (event.clientX - rect.left) / rect.width;
       const y = (event.clientY - rect.top) / rect.height;
@@ -334,7 +370,7 @@
 
       simulatorBusy = false;
       simButtons.forEach((button) => { button.disabled = false; });
-    }, reduceMotion.matches ? 300 : 1250);
+    }, !motionEnabled() ? 300 : 1250);
   };
 
   simButtons.forEach((button) => {
@@ -404,8 +440,9 @@
   const observeAppTour = () => {
     if (appTourObserver) appTourObserver.disconnect();
     appTourObserver = null;
-    if (!("IntersectionObserver" in window) || reduceMotion.matches || !window.matchMedia("(min-width: 981px)").matches) return;
+    if (!("IntersectionObserver" in window) || !window.matchMedia("(min-width: 981px)").matches) return;
     appTourObserver = new IntersectionObserver((entries) => {
+      if (!motionEnabled()) return;
       const visible = entries
         .filter((entry) => entry.isIntersecting)
         .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
@@ -423,7 +460,7 @@
           const stepLeft = step.getBoundingClientRect().left - scroller.getBoundingClientRect().left + scroller.scrollLeft;
           scroller.scrollTo({
             left: stepLeft - (scroller.clientWidth - step.offsetWidth) / 2,
-            behavior: reduceMotion.matches ? "auto" : "smooth",
+            behavior: motionEnabled() ? "smooth" : "auto",
           });
         }
       }

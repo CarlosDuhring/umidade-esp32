@@ -13,9 +13,18 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
-  <script>document.documentElement.classList.add("js");</script>
-  <link rel="stylesheet" href="styles.css" />
-  <script src="app.js" defer></script>
+  <script>
+    (() => {
+      document.documentElement.classList.add("js");
+      try {
+        if (localStorage.getItem("faceclass:motion") === "off") {
+          document.documentElement.classList.add("motion-off");
+        }
+      } catch (error) { /* storage blocked: keep motion on */ }
+    })();
+  </script>
+  <link rel="stylesheet" href="styles.css?v=20261108b" />
+  <script src="app.js?v=20261108b" defer></script>
 </head>
 <body>
   <svg class="svg-sprite" aria-hidden="true" focusable="false">
@@ -141,11 +150,19 @@
         <a href="#painel">Painel</a>
         <a href="#especificacoes">Especificações</a>
         <a class="mobile-nav-cta" href="#contato">Solicitar demonstração <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+        <button class="mobile-motion-toggle" type="button" data-motion-toggle aria-pressed="true" aria-label="Desativar animações">
+          <svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>
+          <span>Movimento</span>
+          <b data-motion-state>Ativado</b>
+        </button>
       </nav>
 
       <div class="header-actions">
         <a class="button button-quiet desktop-cta" href="#contato">Falar com especialista</a>
         <a class="button button-primary header-cta" href="#contato">Solicitar demo <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+        <button class="motion-toggle" type="button" data-motion-toggle aria-pressed="true" aria-label="Desativar animações" title="Animações ativadas — clique para desativar">
+          <svg class="icon" aria-hidden="true"><use href="#i-spark"/></svg>
+        </button>
         <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="siteNav">
           <span></span><span></span>
         </button>

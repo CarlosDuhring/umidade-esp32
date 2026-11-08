@@ -88,6 +88,7 @@ ul { padding: 0; list-style: none; }
 .site-nav a:hover, .site-nav a.is-active { color: #fff; }
 .site-nav a:hover::after, .site-nav a.is-active::after { right: 0; }
 .mobile-nav-cta { display: none; }
+.mobile-motion-toggle { display: none; }
 .header-actions { display: flex; align-items: center; gap: 9px; flex: 0 0 auto; }
 .button {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -113,6 +114,22 @@ ul { padding: 0; list-style: none; }
 .menu-toggle span { display: block; width: 15px; height: 1.5px; border-radius: 2px; background: #fff; transition: transform .3s var(--ease); }
 .site-header.is-menu-open .menu-toggle span:first-child { transform: translateY(3.25px) rotate(45deg); }
 .site-header.is-menu-open .menu-toggle span:last-child { transform: translateY(-3.25px) rotate(-45deg); }
+.motion-toggle {
+  position: relative; display: inline-flex; align-items: center; justify-content: center;
+  width: 38px; height: 38px; flex: 0 0 auto; padding: 0;
+  border: 1px solid rgba(255,255,255,.17); border-radius: 50%;
+  background: rgba(255,255,255,.04); color: rgba(235,246,255,.76);
+  transition: color .2s ease, background .2s ease, border-color .2s ease, transform .2s ease;
+}
+.motion-toggle:hover { color: #fff; background: rgba(255,255,255,.1); border-color: rgba(255,255,255,.32); transform: translateY(-1px); }
+.motion-toggle .icon { width: 17px; height: 17px; }
+.motion-toggle::after {
+  content: ""; position: absolute; width: 18px; height: 1.5px; border-radius: 2px;
+  background: currentColor; transform: rotate(-45deg) scaleX(0); transform-origin: center;
+  transition: transform .25s var(--ease-maison);
+}
+.motion-toggle[aria-pressed="false"] { color: #ffc4ca; border-color: rgba(255,107,120,.3); background: rgba(239,75,91,.09); }
+.motion-toggle[aria-pressed="false"]::after { transform: rotate(-45deg) scaleX(1); }
 
 /* Hero */
 .hero {
@@ -694,8 +711,20 @@ ul { padding: 0; list-style: none; }
   .site-nav .mobile-nav-cta:hover { background: #3a9aff; color: #fff; }
   .site-nav a::after { display: none; }
   .site-nav a:hover { background: rgba(255,255,255,.06); }
-  .site-header.is-menu-open .site-nav { max-height: 520px; max-height: min(72svh, 520px); padding: 8px; border-color: rgba(138,204,255,.16); opacity: 1; visibility: visible; transform: none; overflow-y: auto; }
+  .site-header.is-menu-open .site-nav { max-height: 520px; max-height: min(72svh, 560px); padding: 8px; border-color: rgba(138,204,255,.16); opacity: 1; visibility: visible; transform: none; overflow-y: auto; }
   .menu-toggle { display: flex; }
+  .header-actions .motion-toggle { display: none; }
+  .mobile-motion-toggle {
+    display: flex; align-items: center; gap: 9px; width: 100%;
+    margin-top: 5px; padding: 13px 14px; border: 0; border-radius: 9px;
+    background: rgba(255,255,255,.035); color: rgba(235,246,255,.7);
+    font-family: var(--body); font-size: 11px; font-weight: 700; text-align: left;
+  }
+  .mobile-motion-toggle .icon { width: 16px; height: 16px; color: var(--sky); }
+  .mobile-motion-toggle b { margin-left: auto; color: #fff; font-size: 10px; font-weight: 800; }
+  .mobile-motion-toggle[aria-pressed="false"] { color: #ffc4ca; background: rgba(239,75,91,.08); }
+  .mobile-motion-toggle[aria-pressed="false"] .icon { color: #ff8f9b; }
+  .mobile-motion-toggle[aria-pressed="false"] b { color: #ffc4ca; }
   .header-actions { margin-left: auto; }
   .header-cta { min-height: 38px; font-size: 10px; }
   .hero { padding-top: calc(var(--header-h) + 40px); }
@@ -897,10 +926,16 @@ ul { padding: 0; list-style: none; }
   .form-head h3 { font-size: 22px; }
   .footer-links { order: 4; width: 100%; margin-left: 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  html { scroll-behavior: auto; }
-  *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-  .js .reveal { opacity: 1; transform: none; }
+/* Motion is on by default in this demo so the scroll language is always visible.
+   The header switch (and the mobile menu switch) opts into a calm, reduced mode. */
+html.motion-off { scroll-behavior: auto; }
+html.motion-off *, html.motion-off *::before, html.motion-off *::after {
+  animation-duration: .01ms !important; animation-delay: 0s !important; animation-iteration-count: 1 !important;
+  transition-duration: .01ms !important; transition-delay: 0s !important;
+}
+html.motion-off.js .reveal { opacity: 1 !important; transform: none !important; }
+html.motion-replay *, html.motion-replay *::before, html.motion-replay *::after {
+  animation: none !important; transition: none !important;
 }
 
 /* ============================================================
@@ -1414,20 +1449,19 @@ body.camera-open { overflow: hidden; }
   .camera-checks small { font-size: 6.4px; }
   .camera-check-icon { width: 24px; height: 24px; }
 }
-@media (prefers-reduced-motion: reduce) {
-  .hero-copy, .hero-stage, .hero-grid-lines, .hero-glow-a, .hero-glow-b, .spec-product-stage { transform: none; }
-  .hero-stage { opacity: 1; }
-  .hero-stage::after { animation: none; transform: none; }
-  .hero-anim, .hero-eyebrow, .hero-bottom { opacity: 1 !important; transform: none !important; animation: none !important; }
-  .js .reveal, .js .reveal.reveal-left, .js .reveal.reveal-right, .js .reveal.reveal-scale,
-  .js .step.reveal, .js .section-head h2.reveal, .js .contact-copy h2.reveal {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
-  .site-nav a { --stagger: 0s !important; }
-  .app-tour-visual { position: static; }
-  .app-step { min-height: auto; }
-  .app-view { transition: none; }
-  .camera-dialog[open] { animation: none; }
+html.motion-off .hero-copy, html.motion-off .hero-stage, html.motion-off .hero-grid-lines,
+html.motion-off .hero-glow-a, html.motion-off .hero-glow-b, html.motion-off .spec-product-stage { transform: none; }
+html.motion-off .hero-stage { opacity: 1; }
+html.motion-off .hero-stage::after { animation: none; transform: none; }
+html.motion-off .hero-anim, html.motion-off .hero-eyebrow, html.motion-off .hero-bottom { opacity: 1 !important; transform: none !important; animation: none !important; }
+html.motion-off .reveal, html.motion-off .reveal.reveal-left, html.motion-off .reveal.reveal-right, html.motion-off .reveal.reveal-scale,
+html.motion-off .step.reveal, html.motion-off .section-head h2.reveal, html.motion-off .contact-copy h2.reveal {
+  opacity: 1 !important;
+  transform: none !important;
+  transition: none !important;
 }
+html.motion-off .site-nav a { --stagger: 0s !important; }
+html.motion-off .app-tour-visual { position: static; }
+html.motion-off .app-step { min-height: auto; }
+html.motion-off .app-view { transition: none; }
+html.motion-off .camera-dialog[open] { animation: none; }
