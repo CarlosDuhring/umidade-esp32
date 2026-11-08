@@ -17,7 +17,11 @@
     (() => {
       document.documentElement.classList.add("js");
       try {
-        if (localStorage.getItem("faceclass:motion") === "off") {
+        const forcedMotion = new URLSearchParams(location.search).get("motion");
+        if (forcedMotion === "on" || forcedMotion === "off") {
+          localStorage.setItem("faceclass:motion", forcedMotion);
+          document.documentElement.classList.toggle("motion-off", forcedMotion === "off");
+        } else if (localStorage.getItem("faceclass:motion") === "off") {
           document.documentElement.classList.add("motion-off");
         }
       } catch (error) { /* storage blocked: keep motion on */ }
