@@ -26,6 +26,8 @@
 
   /* Header, menu and scroll progress */
   const hero = $(".hero");
+  const heroStageNode = $("#heroStage");
+  const narrowHero = window.matchMedia("(max-width: 980px)");
   const parallaxItems = $$("[data-parallax]");
   let scrollTicking = false;
   const updateScroll = () => {
@@ -38,8 +40,25 @@
     }
     if (hero) {
       const rect = hero.getBoundingClientRect();
-      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height * .72)));
+      const progress = Math.min(1, Math.max(0, -rect.top / Math.max(1, rect.height)));
       hero.style.setProperty("--hero-scroll", progress.toFixed(3));
+      if (reduceMotion.matches) {
+        hero.style.setProperty("--hero-y", "0px");
+        hero.style.setProperty("--hero-fade", "1");
+      } else if (narrowHero.matches && heroStageNode) {
+        /* On mobile the visual sits below the copy: fade it only as it leaves the top. */
+        const stageHeight = heroStageNode.offsetHeight || 385;
+        const stageTop = heroStageNode.getBoundingClientRect().top;
+        const headerOffset = 70;
+        const leaveDistance = Math.max(1, headerOffset + stageHeight * .45);
+        const stageProgress = Math.min(1, Math.max(0, (headerOffset - stageTop) / leaveDistance));
+        hero.style.setProperty("--hero-y", `${(stageProgress * stageHeight * .2).toFixed(1)}px`);
+        hero.style.setProperty("--hero-fade", (1 - stageProgress).toFixed(3));
+      } else {
+        const stageHeight = heroStageNode?.offsetHeight || 560;
+        hero.style.setProperty("--hero-y", `${(progress * stageHeight * .2).toFixed(1)}px`);
+        hero.style.setProperty("--hero-fade", Math.max(0, 1 - progress / .8).toFixed(3));
+      }
     }
     if (!reduceMotion.matches) {
       parallaxItems.forEach((element) => {
@@ -117,7 +136,7 @@
           entry.target.classList.add("is-visible");
           observer.unobserve(entry.target);
         });
-      }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" })
+      }, { threshold: 0.01, rootMargin: "0px 0px -100px 0px" })
     : null;
   revealElements.forEach((element) => {
     if (revealObserver) revealObserver.observe(element);
