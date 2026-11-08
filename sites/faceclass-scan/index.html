@@ -1,0 +1,640 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#061a36" />
+  <title>FaceClass Scan · Reconhecimento que conecta alunos e escola</title>
+  <meta name="description" content="Controle de entrada e saída por reconhecimento facial, com confirmações em tempo real para o professor e mais segurança para a escola." />
+  <meta property="og:title" content="FaceClass Scan · O futuro da sua escola" />
+  <meta property="og:description" content="Reconhecimento facial, controle de acesso e notificações em tempo real em uma única experiência." />
+  <meta property="og:type" content="website" />
+  <link rel="icon" href="favicon.svg" type="image/svg+xml" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Sora:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <script>document.documentElement.classList.add("js");</script>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <svg class="svg-sprite" aria-hidden="true" focusable="false">
+    <symbol id="i-face" viewBox="0 0 24 24">
+      <path d="M8 3H5a2 2 0 0 0-2 2v3M16 3h3a2 2 0 0 1 2 2v3M8 21H5a2 2 0 0 1-2-2v-3M16 21h3a2 2 0 0 0 2-2v-3" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      <path d="M9 9.5v.1M15 9.5v.1M9.5 14c.8.8 1.6 1.2 2.5 1.2s1.7-.4 2.5-1.2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-shield" viewBox="0 0 24 24">
+      <path d="M12 3 20 6v5.5c0 4.7-3.2 7.9-8 9.5-4.8-1.6-8-4.8-8-9.5V6l8-3Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="m8.5 12 2.2 2.2 4.8-4.7" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-door" viewBox="0 0 24 24">
+      <path d="M4 21h16M6 21V5.5A1.5 1.5 0 0 1 7.5 4h9A1.5 1.5 0 0 1 18 5.5V21M14 12h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-bell" viewBox="0 0 24 24">
+      <path d="M18 9a6 6 0 0 0-12 0c0 7-3 7-3 8.5h18C21 16 18 16 18 9ZM10 21h4" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-users" viewBox="0 0 24 24">
+      <circle cx="9" cy="8" r="3" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="M3.5 20c.5-3.3 2.3-5 5.5-5s5 1.7 5.5 5M16 5.5a3 3 0 0 1 0 5.8M17 15c2.2.3 3.4 1.9 3.8 4.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-chart" viewBox="0 0 24 24">
+      <path d="M4 20V10M10 20V4M16 20v-7M22 20H2" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-spark" viewBox="0 0 24 24">
+      <path d="m12 3 1.7 5.3L19 10l-5.3 1.7L12 17l-1.7-5.3L5 10l5.3-1.7L12 3Z" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+      <path d="m19 16 .8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8L19 16Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-tools" viewBox="0 0 24 24">
+      <path d="m14.5 6.5 3-3a4 4 0 0 1-5.2 5.2l-6.8 6.8a2.1 2.1 0 0 0 3 3l6.8-6.8a4 4 0 0 0 5.2-5.2l-3 3-3-3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-play" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.8"/>
+      <path d="m10 8.5 5 3.5-5 3.5v-7Z" fill="currentColor"/>
+    </symbol>
+    <symbol id="i-arrow" viewBox="0 0 24 24">
+      <path d="M5 12h14M13 6l6 6-6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-check" viewBox="0 0 24 24">
+      <path d="m5 12.5 4.2 4L19 6.8" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-alert" viewBox="0 0 24 24">
+      <path d="M12 4 21 20H3L12 4Z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+      <path d="M12 9v5M12 17h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-logout" viewBox="0 0 24 24">
+      <path d="M10 4H5v16h5M14 8l4 4-4 4M8 12h10" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-settings" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="3" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1-2.8 2.8-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.6v.2h-4V21a1.7 1.7 0 0 0-1-1.6 1.7 1.7 0 0 0-1.9.3l-.1.1L4.2 17l.1-.1a1.7 1.7 0 0 0 .3-1.9A1.7 1.7 0 0 0 3 14H2.8v-4H3a1.7 1.7 0 0 0 1.6-1 1.7 1.7 0 0 0-.3-1.9L4.2 7 7 4.2l.1.1A1.7 1.7 0 0 0 9 4.6 1.7 1.7 0 0 0 10 3v-.2h4V3a1.7 1.7 0 0 0 1 1.6 1.7 1.7 0 0 0 1.9-.3l.1-.1L19.8 7l-.1.1a1.7 1.7 0 0 0-.3 1.9 1.7 1.7 0 0 0 1.6 1h.2v4H21a1.7 1.7 0 0 0-1.6 1Z" fill="none" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-mail" viewBox="0 0 24 24">
+      <rect x="3" y="5" width="18" height="14" rx="2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="m4 7 8 6 8-6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-pin" viewBox="0 0 24 24">
+      <path d="M12 21s7-5.3 7-11a7 7 0 1 0-14 0c0 5.7 7 11 7 11Z" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <circle cx="12" cy="10" r="2.3" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-download" viewBox="0 0 24 24">
+      <path d="M12 3v12M7 10l5 5 5-5M4 21h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+  </svg>
+
+  <div class="scroll-progress" aria-hidden="true"></div>
+
+  <header class="site-header" id="topo">
+    <div class="header-inner shell">
+      <a class="brand" href="#topo" aria-label="FaceClass Scan, início">
+        <span class="brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 72" focusable="false">
+            <path d="M32 3.5 58 13v19.5c0 17-10.6 28.4-26 35.5C16.6 60.9 6 49.5 6 32.5V13L32 3.5Z" fill="none" stroke="currentColor" stroke-width="2.6" opacity=".95"/>
+            <path d="M18 24v-4.5A3.5 3.5 0 0 1 21.5 16H26M38 16h4.5a3.5 3.5 0 0 1 3.5 3.5V24M18 48v4.5a3.5 3.5 0 0 0 3.5 3.5H26M38 56h4.5a3.5 3.5 0 0 0 3.5-3.5V48" fill="none" stroke="#35b8ff" stroke-width="2.6" stroke-linecap="round"/>
+            <circle cx="32" cy="31" r="6.2" fill="none" stroke="currentColor" stroke-width="2.4"/>
+            <path d="M24.5 45c1.1-4 3.6-6 7.5-6s6.4 2 7.5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+          </svg>
+        </span>
+        <span class="brand-word">FaceClass <b>Scan</b></span>
+      </a>
+
+      <nav class="site-nav" id="siteNav" aria-label="Navegação principal">
+        <a href="#produto">Produto</a>
+        <a href="#recursos">Recursos</a>
+        <a href="#como-funciona">Como funciona</a>
+        <a href="#demo">Demonstração</a>
+        <a href="#painel">Painel</a>
+        <a href="#especificacoes">Especificações</a>
+      </nav>
+
+      <div class="header-actions">
+        <a class="button button-quiet desktop-cta" href="#contato">Falar com especialista</a>
+        <a class="button button-primary header-cta" href="#contato">Solicitar demo <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+        <button class="menu-toggle" id="menuToggle" type="button" aria-label="Abrir menu" aria-expanded="false" aria-controls="siteNav">
+          <span></span><span></span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero" id="produto">
+      <div class="hero-grid-lines" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-a" aria-hidden="true"></div>
+      <div class="hero-glow hero-glow-b" aria-hidden="true"></div>
+      <div class="shell hero-layout">
+        <div class="hero-copy">
+          <p class="eyebrow hero-anim" style="--delay:.05s"><span class="eyebrow-dot"></span> Reconhecimento facial para escolas</p>
+          <h1 class="hero-anim" style="--delay:.13s">Mais que tecnologia, <span class="text-gradient">é o futuro</span> da sua escola.</h1>
+          <p class="hero-lead hero-anim" style="--delay:.23s">Controle de entrada e saída por reconhecimento facial, com confirmações em tempo real para o professor. Mais segurança, menos interrupções e uma rotina que flui.</p>
+          <div class="hero-actions hero-anim" style="--delay:.33s">
+            <a class="button button-primary button-large" href="#demo"><svg class="icon"><use href="#i-play"/></svg> Ver demonstração</a>
+            <a class="button button-outline button-large" href="#como-funciona">Como funciona <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+          </div>
+          <ul class="hero-points hero-anim" style="--delay:.42s" aria-label="Destaques">
+            <li><svg class="icon"><use href="#i-check"/></svg> Instalação simples</li>
+            <li><svg class="icon"><use href="#i-check"/></svg> Notificações em tempo real</li>
+            <li><svg class="icon"><use href="#i-check"/></svg> Sem contato físico</li>
+          </ul>
+          <div class="hero-trust hero-anim" style="--delay:.5s" aria-label="Números da demonstração">
+            <div><strong data-count="2">0</strong><span>segundos para reconhecer</span></div>
+            <div><strong data-count="88" data-suffix="%">0%</strong><span>frequência acompanhada</span></div>
+            <div><strong data-count="24" data-suffix="/7">0/7</strong><span>entrada monitorada</span></div>
+          </div>
+        </div>
+
+        <div class="hero-visual hero-anim" style="--delay:.3s">
+          <div class="hero-stage" id="heroStage">
+            <div class="hero-stage-top">
+              <span class="status-pill status-pill-blue"><span class="status-dot"></span> Sistema ativo</span>
+              <span class="stage-label">SALA 01 · ENTRADA</span>
+            </div>
+
+            <div class="doorway" aria-hidden="true">
+              <div class="doorway-light"></div>
+              <div class="doorway-frame">
+                <span class="door-sign">ENTRADA<br><b>SALA 01</b></span>
+              </div>
+              <div class="doorway-hall"></div>
+            </div>
+
+            <div class="hero-device" aria-label="Leitor FaceClass Scan instalado acima da porta">
+              <span class="device-highlight" aria-hidden="true"></span>
+              <div class="device-brand">
+                <span class="device-logo" aria-hidden="true">
+                  <svg viewBox="0 0 64 72"><path d="M32 4 56 13v19c0 16-10 27-24 34C18 59 8 48 8 32V13L32 4Z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="31" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M25 44c1-3.6 3.5-5.5 7-5.5s6 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg>
+                </span>
+                <span>FaceClass <b>Scan</b></span>
+              </div>
+              <div class="device-sensors" aria-hidden="true"><i></i><i></i><i></i></div>
+              <span class="device-word">Scan</span>
+              <span class="device-led-led" aria-hidden="true"></span>
+            </div>
+
+            <div class="scan-beam" aria-hidden="true"></div>
+
+            <div class="floating-card floating-entry">
+              <span class="mini-avatar avatar-ana">AC</span>
+              <div><strong>Ana Clara</strong><span>Entrada confirmada · 07:32</span></div>
+              <span class="mini-check" aria-hidden="true"><svg class="icon"><use href="#i-check"/></svg></span>
+            </div>
+
+            <div class="hero-phone">
+              <div class="phone-notch"></div>
+              <div class="phone-screen">
+                <div class="phone-statusbar"><span>9:41</span><span class="phone-signals">● ● ●</span></div>
+                <div class="phone-app-head">
+                  <span class="tiny-logo">F</span>
+                  <div><strong>FaceClass</strong><span>Notificações</span></div>
+                  <span class="phone-badge">1</span>
+                </div>
+                <div class="phone-notification">
+                  <span class="notif-icon notif-green"><svg class="icon"><use href="#i-check"/></svg></span>
+                  <div><strong>Entrada confirmada</strong><span>Ana Clara entrou na sala 01</span><small>agora · 07:32</small></div>
+                </div>
+                <div class="phone-mini-stats">
+                  <div><span>Presentes</span><strong>22</strong></div>
+                  <div><span>Frequência</span><strong>88%</strong></div>
+                </div>
+                <div class="phone-bars" aria-hidden="true"><i style="height:42%"></i><i style="height:58%"></i><i style="height:49%"></i><i style="height:76%"></i><i style="height:64%"></i><i style="height:88%"></i><i style="height:72%"></i></div>
+              </div>
+            </div>
+
+            <div class="floating-card floating-security">
+              <span class="security-orb"><svg class="icon"><use href="#i-shield"/></svg></span>
+              <div><strong>Entrada protegida</strong><span>Reconhecimento facial ativo</span></div>
+            </div>
+          </div>
+          <p class="visual-caption"><span class="caption-line"></span> Instalação discreta, resultado imediato.</p>
+        </div>
+      </div>
+
+      <div class="hero-bottom">
+        <div class="shell hero-bottom-inner">
+          <span>FEITO PARA ESCOLAS QUE QUEREM IR ALÉM</span>
+          <div class="hero-bottom-line"></div>
+          <a href="#recursos">Descubra o sistema <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+        </div>
+      </div>
+    </section>
+
+    <div class="marquee" aria-label="Recursos FaceClass Scan">
+      <div class="marquee-track">
+        <span>Reconhecimento facial</span><i></i><span>Controle de acesso</span><i></i><span>Notificações em tempo real</span><i></i><span>Mais segurança</span><i></i><span>Instalação simples</span><i></i>
+        <span>Reconhecimento facial</span><i></i><span>Controle de acesso</span><i></i><span>Notificações em tempo real</span><i></i><span>Mais segurança</span><i></i><span>Instalação simples</span><i></i>
+      </div>
+    </div>
+
+    <section class="section features-section" id="recursos">
+      <div class="shell">
+        <div class="section-head split-head">
+          <div>
+            <p class="eyebrow eyebrow-dark reveal"><span class="eyebrow-dot"></span> Tudo em um só sistema</p>
+            <h2 class="reveal" style="--delay:.05s">A entrada da escola<br>mais <span class="text-blue">inteligente.</span></h2>
+          </div>
+          <p class="section-intro reveal" style="--delay:.12s">Cada detalhe foi pensado para a rotina escolar: reconhecer, registrar e avisar — sem atrito, sem filas e sem interromper a aula.</p>
+        </div>
+
+        <div class="feature-grid">
+          <article class="feature-card reveal" style="--delay:.04s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-face"/></svg></span>
+            <span class="feature-index">01</span>
+            <h3>Reconhecimento facial</h3>
+            <p>Identifica o aluno em segundos, com alta precisão e sem contato físico.</p>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+          <article class="feature-card reveal" style="--delay:.08s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-door"/></svg></span>
+            <span class="feature-index">02</span>
+            <h3>Controle de entrada e saída</h3>
+            <p>Registra automaticamente cada acesso e mantém a frequência sempre atualizada.</p>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+          <article class="feature-card reveal" style="--delay:.12s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-bell"/></svg></span>
+            <span class="feature-index">03</span>
+            <h3>Notificações em tempo real</h3>
+            <p>O professor recebe a confirmação no celular assim que o aluno entra.</p>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+          <article class="feature-card reveal" style="--delay:.16s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-shield"/></svg></span>
+            <span class="feature-index">04</span>
+            <h3>Mais segurança</h3>
+            <p>Evita acessos não autorizados e deixa a rotina da escola mais tranquila.</p>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+          <article class="feature-card reveal" style="--delay:.2s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-tools"/></svg></span>
+            <span class="feature-index">05</span>
+            <h3>Instalação simples</h3>
+            <p>Design moderno e discreto, que combina com qualquer ambiente escolar.</p>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+          <article class="feature-card feature-card-accent reveal" style="--delay:.24s">
+            <span class="feature-icon"><svg class="icon"><use href="#i-chart"/></svg></span>
+            <span class="feature-index">06</span>
+            <h3>Relatórios que ajudam</h3>
+            <p>Acompanhe presença, faltas e frequência em uma visão clara para a coordenação.</p>
+            <a class="text-link" href="#painel">Ver o painel <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+            <span class="feature-glow" aria-hidden="true"></span>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section how-section" id="como-funciona">
+      <div class="shell">
+        <div class="section-head center-head">
+          <p class="eyebrow eyebrow-dark reveal"><span class="eyebrow-dot"></span> Simples por dentro. Fluido por fora.</p>
+          <h2 class="reveal" style="--delay:.05s">Três passos.<br><span class="text-blue">Zero atrito.</span></h2>
+          <p class="section-intro reveal" style="--delay:.1s">Do primeiro olhar à confirmação no celular do professor, tudo acontece em poucos segundos.</p>
+        </div>
+
+        <div class="steps">
+          <article class="step reveal" style="--delay:.03s">
+            <div class="step-top"><span class="step-number">01</span><span class="step-line"></span><span class="step-icon"><svg class="icon"><use href="#i-face"/></svg></span></div>
+            <h3>O aluno se aproxima</h3>
+            <p>O sensor de presença percebe a chegada e prepara a leitura facial.</p>
+            <div class="step-visual step-visual-approach" aria-hidden="true">
+              <span class="approach-head"></span><span class="approach-rings"></span>
+            </div>
+          </article>
+          <article class="step reveal" style="--delay:.11s">
+            <div class="step-top"><span class="step-number">02</span><span class="step-line"></span><span class="step-icon"><svg class="icon"><use href="#i-spark"/></svg></span></div>
+            <h3>A câmera reconhece</h3>
+            <p>A FaceClass identifica o aluno e valida o acesso com precisão.</p>
+            <div class="step-visual step-visual-scan" aria-hidden="true">
+              <span class="scan-frame"><i></i></span><span class="scanning-line"></span>
+            </div>
+          </article>
+          <article class="step reveal" style="--delay:.19s">
+            <div class="step-top"><span class="step-number">03</span><span class="step-line"></span><span class="step-icon"><svg class="icon"><use href="#i-bell"/></svg></span></div>
+            <h3>O professor recebe</h3>
+            <p>A confirmação chega no celular em tempo real, sem interromper a aula.</p>
+            <div class="step-visual step-visual-notify" aria-hidden="true">
+              <span class="notify-bubble"><span class="mini-avatar avatar-ana">AC</span><span><b>Ana Clara</b><small>Entrada confirmada</small></span><span class="mini-check"><svg class="icon"><use href="#i-check"/></svg></span></span>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section demo-section" id="demo">
+      <div class="demo-grid-bg" aria-hidden="true"></div>
+      <div class="shell">
+        <div class="section-head demo-head split-head">
+          <div>
+            <p class="eyebrow eyebrow-light reveal"><span class="eyebrow-dot"></span> Experimente agora</p>
+            <h2 class="reveal" style="--delay:.05s">Veja o reconhecimento<br><span class="text-cyan">acontecer.</span></h2>
+          </div>
+          <p class="section-intro reveal" style="--delay:.1s">Escolha uma ação e acompanhe o fluxo completo: leitura facial, status do equipamento e notificação no celular do professor.</p>
+        </div>
+
+        <div class="demo-shell">
+          <div class="simulator reveal" style="--delay:.08s">
+            <div class="sim-topbar">
+              <span class="live-label"><span class="status-dot"></span> SIMULADOR AO VIVO</span>
+              <span class="sim-clock" id="simClock">07:32</span>
+            </div>
+            <div class="sim-stage">
+              <div class="sim-device">
+                <span class="sim-device-brand">FaceClass <b>Scan</b></span>
+                <span class="sim-sensors"><i></i><i></i><i></i></span>
+                <span class="sim-word">Scan</span>
+                <span class="sim-led" id="simLed"></span>
+              </div>
+              <div class="sim-camera-area">
+                <div class="face-scan" id="faceScan">
+                  <span class="face-corner corner-tl"></span><span class="face-corner corner-tr"></span><span class="face-corner corner-bl"></span><span class="face-corner corner-br"></span>
+                  <span class="face-avatar" id="demoFace">AC</span>
+                  <span class="face-scanline" id="faceScanline"></span>
+                </div>
+                <div class="scan-status">
+                  <span class="sim-status-dot" id="simStatusDot"></span>
+                  <strong id="simStatus">Aguardando aluno</strong>
+                  <span id="simSubstatus">A câmera está pronta para identificar.</span>
+                </div>
+              </div>
+            </div>
+            <div class="sim-controls" aria-label="Simular ações de entrada">
+              <button class="button button-primary sim-button" type="button" data-action="entry"><svg class="icon"><use href="#i-door"/></svg> Simular entrada</button>
+              <button class="button button-glass sim-button" type="button" data-action="exit"><svg class="icon"><use href="#i-logout"/></svg> Simular saída</button>
+              <button class="button button-alert sim-button" type="button" data-action="alert"><svg class="icon"><use href="#i-alert"/></svg> Simular alerta</button>
+            </div>
+            <div class="sim-log">
+              <div class="sim-log-head"><span>ÚLTIMAS ATIVIDADES</span><span id="simLogCount">3 eventos</span></div>
+              <div class="sim-log-list" id="simLogList" aria-live="polite">
+                <div class="sim-log-item"><span class="log-dot log-green"></span><span><b>Ana Clara</b> entrou na sala 01</span><time>07:32</time></div>
+                <div class="sim-log-item"><span class="log-dot log-blue"></span><span><b>Lucas Gabriel</b> saiu da sala 01</span><time>07:28</time></div>
+                <div class="sim-log-item"><span class="log-dot log-red"></span><span>Aluno não identificado</span><time>07:24</time></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="demo-phone-wrap reveal" style="--delay:.16s">
+            <div class="demo-phone">
+              <div class="phone-notch"></div>
+              <div class="phone-screen app-screen">
+                <div class="phone-statusbar"><span>9:41</span><span class="phone-signals">● ● ●</span></div>
+                <div class="phone-app-head">
+                  <span class="tiny-logo">F</span>
+                  <div><strong>FaceClass</strong><span>Notificações</span></div>
+                  <span class="phone-badge" id="notifBadge">3</span>
+                </div>
+                <div class="app-tabs notif-tabs" role="tablist" aria-label="Filtrar notificações">
+                  <button class="app-tab is-active" type="button" role="tab" aria-selected="true" data-filter="all">Tudo</button>
+                  <button class="app-tab" type="button" role="tab" aria-selected="false" data-filter="entry">Entradas</button>
+                  <button class="app-tab" type="button" role="tab" aria-selected="false" data-filter="exit">Saídas</button>
+                  <button class="app-tab" type="button" role="tab" aria-selected="false" data-filter="alert">Alertas</button>
+                </div>
+                <div class="notif-list" id="notifList" aria-live="polite">
+                  <article class="notif-item" data-type="entry">
+                    <span class="notif-icon notif-green"><svg class="icon"><use href="#i-check"/></svg></span>
+                    <div><strong>Entrada confirmada</strong><p>Maria Silva entrou na sala 101.</p><small>10:22</small></div>
+                  </article>
+                  <article class="notif-item" data-type="alert">
+                    <span class="notif-icon notif-red"><svg class="icon"><use href="#i-alert"/></svg></span>
+                    <div><strong>Alerta de presença</strong><p>Aluno não identificado na entrada da sala 102.</p><small>10:24</small></div>
+                  </article>
+                  <article class="notif-item" data-type="exit">
+                    <span class="notif-icon notif-blue"><svg class="icon"><use href="#i-logout"/></svg></span>
+                    <div><strong>Saída confirmada</strong><p>João Pereira saiu da sala 101.</p><small>10:15</small></div>
+                  </article>
+                </div>
+                <div class="phone-bottom-nav" aria-hidden="true">
+                  <span class="is-on"><svg class="icon"><use href="#i-chart"/></svg><small>Início</small></span>
+                  <span><svg class="icon"><use href="#i-bell"/></svg><small>Notificações</small></span>
+                  <span><svg class="icon"><use href="#i-users"/></svg><small>Alunos</small></span>
+                </div>
+              </div>
+            </div>
+            <div class="phone-shadow" aria-hidden="true"></div>
+            <p class="demo-phone-caption">O professor acompanha tudo pelo celular.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dashboard-section" id="painel">
+      <div class="shell">
+        <div class="section-head split-head">
+          <div>
+            <p class="eyebrow eyebrow-dark reveal"><span class="eyebrow-dot"></span> Painel FaceClass</p>
+            <h2 class="reveal" style="--delay:.05s">A rotina da escola<br><span class="text-blue">em um só lugar.</span></h2>
+          </div>
+          <p class="section-intro reveal" style="--delay:.1s">Presenças, ausências, frequência e últimas atividades em uma interface direta — para o professor e para a coordenação.</p>
+        </div>
+
+        <div class="dashboard-frame reveal" style="--delay:.1s">
+          <aside class="dash-sidebar">
+            <div class="dash-logo"><span class="tiny-logo">F</span><span>FaceClass</span></div>
+            <nav class="dash-nav" aria-label="Painel de demonstração">
+              <button type="button" class="dash-nav-item is-active" data-app-tab="home"><svg class="icon"><use href="#i-chart"/></svg><span>Início</span></button>
+              <button type="button" class="dash-nav-item" data-app-tab="alunos"><svg class="icon"><use href="#i-users"/></svg><span>Alunos</span><b class="nav-badge">25</b></button>
+              <button type="button" class="dash-nav-item" data-app-tab="relatorios"><svg class="icon"><use href="#i-chart"/></svg><span>Relatórios</span></button>
+              <button type="button" class="dash-nav-item" data-app-tab="config"><svg class="icon"><use href="#i-settings"/></svg><span>Ajustes</span></button>
+            </nav>
+            <div class="dash-sidebar-foot">
+              <span class="dash-avatar">JS</span>
+              <div><strong>Júlia Santos</strong><span>Professora</span></div>
+              <button class="dash-logout" type="button" aria-label="Sair"><svg class="icon"><use href="#i-logout"/></svg></button>
+            </div>
+          </aside>
+
+          <div class="dash-main">
+            <div class="dash-topbar">
+              <div class="dash-greeting"><span>Bom dia,</span><strong>Professora Júlia</strong></div>
+              <div class="dash-actions">
+                <span class="dash-school">Colégio Saber <span class="chevron">⌄</span></span>
+                <span class="dash-avatar small">JS</span>
+              </div>
+            </div>
+
+            <div class="dash-panel is-active" data-panel="home">
+              <div class="dash-status"><span class="status-check"><svg class="icon"><use href="#i-check"/></svg></span><div><strong>Sistema ativo</strong><span>Reconhecimento facial funcionando normalmente.</span></div><span class="status-live"><i></i> AO VIVO</span></div>
+              <div class="dash-stats">
+                <article><span class="stat-icon stat-blue"><svg class="icon"><use href="#i-users"/></svg></span><div><strong data-count="25">0</strong><span>Alunos</span></div><small>Turma completa</small></article>
+                <article><span class="stat-icon stat-green"><svg class="icon"><use href="#i-check"/></svg></span><div><strong data-count="22">0</strong><span>Presentes</span></div><small class="positive">+2 hoje</small></article>
+                <article><span class="stat-icon stat-red"><svg class="icon"><use href="#i-alert"/></svg></span><div><strong data-count="3">0</strong><span>Ausentes</span></div><small>Aguardando</small></article>
+                <article><span class="stat-icon stat-navy"><svg class="icon"><use href="#i-chart"/></svg></span><div><strong data-count="88" data-suffix="%">0%</strong><span>Frequência</span></div><small class="positive">+2% no mês</small></article>
+              </div>
+              <div class="dash-content-grid">
+                <div class="dash-card activities-card">
+                  <div class="dash-card-head"><h3>Últimas atividades</h3><button type="button" class="text-link" data-app-tab="alunos">Ver todas <svg class="icon icon-sm"><use href="#i-arrow"/></svg></button></div>
+                  <div class="student-activity">
+                    <span class="mini-avatar avatar-ana">AC</span><div><strong>Ana Clara</strong><span>Entrada · 07:12</span></div><span class="pill pill-green">Presente</span>
+                  </div>
+                  <div class="student-activity">
+                    <span class="mini-avatar avatar-pedro">PH</span><div><strong>Pedro Henrique</strong><span>Entrada · 07:08</span></div><span class="pill pill-green">Presente</span>
+                  </div>
+                  <div class="student-activity">
+                    <span class="mini-avatar avatar-mari">MS</span><div><strong>Mariana Souza</strong><span>Sem registro · hoje</span></div><span class="pill pill-red">Ausente</span>
+                  </div>
+                </div>
+                <div class="dash-card frequency-card">
+                  <div class="dash-card-head"><h3>Frequência da turma</h3><span class="pill pill-blue">Este mês</span></div>
+                  <div class="frequency-ring" style="--value:88"><div><strong>88%</strong><span>média</span></div></div>
+                  <div class="legend"><span><i class="legend-green"></i> Presentes <b>22</b></span><span><i class="legend-red"></i> Ausentes <b>3</b></span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-panel" data-panel="alunos">
+              <div class="dash-card table-card">
+                <div class="dash-card-head"><div><h3>Alunos da turma</h3><span>25 alunos · sala 101</span></div><span class="pill pill-green">22 presentes</span></div>
+                <div class="student-table">
+                  <div class="student-row student-row-head"><span>Aluno</span><span>Entrada</span><span>Status</span></div>
+                  <div class="student-row"><span><span class="mini-avatar avatar-ana">AC</span><b>Ana Clara</b></span><span>07:12</span><span class="pill pill-green">Presente</span></div>
+                  <div class="student-row"><span><span class="mini-avatar avatar-pedro">PH</span><b>Pedro Henrique</b></span><span>07:08</span><span class="pill pill-green">Presente</span></div>
+                  <div class="student-row"><span><span class="mini-avatar avatar-mari">MS</span><b>Mariana Souza</b></span><span>—</span><span class="pill pill-red">Ausente</span></div>
+                  <div class="student-row"><span><span class="mini-avatar avatar-lucas">LG</span><b>Lucas Gabriel</b></span><span>07:16</span><span class="pill pill-green">Presente</span></div>
+                  <div class="student-row"><span><span class="mini-avatar avatar-isa">IC</span><b>Isabela Costa</b></span><span>07:20</span><span class="pill pill-green">Presente</span></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-panel" data-panel="relatorios">
+              <div class="dash-stats report-stats">
+                <article><span class="stat-icon stat-navy"><svg class="icon"><use href="#i-chart"/></svg></span><div><strong data-count="88" data-suffix="%">0%</strong><span>Frequência média</span></div><small class="positive">+2% no mês</small></article>
+                <article><span class="stat-icon stat-green"><svg class="icon"><use href="#i-check"/></svg></span><div><strong data-count="22">0</strong><span>Presenças</span></div><small>Hoje</small></article>
+                <article><span class="stat-icon stat-red"><svg class="icon"><use href="#i-alert"/></svg></span><div><strong data-count="3">0</strong><span>Ausências</span></div><small>Hoje</small></article>
+              </div>
+              <div class="dash-card chart-card">
+                <div class="dash-card-head"><h3>Frequência por dia</h3><span class="pill pill-blue">Esta semana</span></div>
+                <div class="week-chart" aria-label="Frequência por dia: segunda 88%, terça 92%, quarta 84%, quinta 96%, sexta 88%">
+                  <div class="week-col"><span class="bar" style="--h:88%"></span><b>Seg</b><small>88%</small></div>
+                  <div class="week-col"><span class="bar" style="--h:92%"></span><b>Ter</b><small>92%</small></div>
+                  <div class="week-col"><span class="bar" style="--h:84%"></span><b>Qua</b><small>84%</small></div>
+                  <div class="week-col"><span class="bar" style="--h:96%"></span><b>Qui</b><small>96%</small></div>
+                  <div class="week-col"><span class="bar" style="--h:88%"></span><b>Sex</b><small>88%</small></div>
+                </div>
+              </div>
+            </div>
+
+            <div class="dash-panel" data-panel="config">
+              <div class="dash-card settings-card">
+                <div class="dash-card-head"><div><h3>Ajustes do sistema</h3><span>Preferências da demonstração</span></div><span class="pill pill-blue">Sala 01</span></div>
+                <div class="setting-row"><div><strong>Reconhecimento facial</strong><span>Identificação automática na entrada.</span></div><span class="switch is-on"></span></div>
+                <div class="setting-row"><div><strong>Notificações em tempo real</strong><span>Avisos no celular da professora.</span></div><span class="switch is-on"></span></div>
+                <div class="setting-row"><div><strong>Modo de privacidade</strong><span>Ocultar fotos no painel de alunos.</span></div><span class="switch"></span></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="demo-data-note">Dados ilustrativos para demonstração da interface.</p>
+      </div>
+    </section>
+
+    <section class="section specs-section" id="especificacoes">
+      <div class="shell">
+        <div class="section-head split-head">
+          <div>
+            <p class="eyebrow eyebrow-light reveal"><span class="eyebrow-dot"></span> Design que se adapta</p>
+            <h2 class="reveal" style="--delay:.05s">Tecnologia que<br><span class="text-cyan">desaparece no ambiente.</span></h2>
+          </div>
+          <p class="section-intro reveal" style="--delay:.1s">Um equipamento discreto, resistente e fácil de instalar. Escolha a cor que combina com a sua escola.</p>
+        </div>
+
+        <div class="specs-layout">
+          <div class="specs-product reveal" style="--delay:.05s">
+            <div class="spec-product-stage">
+              <span class="spec-ambient" aria-hidden="true"></span>
+              <div class="spec-device shell-black" id="specDevice">
+                <span class="device-highlight" aria-hidden="true"></span>
+                <div class="device-brand"><span class="device-logo"><svg viewBox="0 0 64 72"><path d="M32 4 56 13v19c0 16-10 27-24 34C18 59 8 48 8 32V13L32 4Z" fill="none" stroke="currentColor" stroke-width="3"/><circle cx="32" cy="31" r="6" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M25 44c1-3.6 3.5-5.5 7-5.5s6 1.9 7 5.5" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span><span>FaceClass <b>Scan</b></span></div>
+                <span class="device-sensors"><i></i><i></i><i></i></span>
+                <span class="device-word">Scan</span>
+                <span class="spec-led"></span>
+              </div>
+              <span class="spec-measure measure-width"><i></i> 50 cm</span>
+              <span class="spec-measure measure-height"><i></i> 8 cm</span>
+            </div>
+            <div class="color-picker">
+              <div><span>COR DO EQUIPAMENTO</span><strong id="colorName">Preto</strong></div>
+              <div class="swatches" role="group" aria-label="Escolher cor do equipamento">
+                <button type="button" class="swatch is-active" style="--swatch:#1c2738" data-shell="shell-black" data-color-name="Preto" aria-label="Preto" aria-pressed="true"></button>
+                <button type="button" class="swatch" style="--swatch:#eef2f7" data-shell="shell-white" data-color-name="Branco" aria-label="Branco" aria-pressed="false"></button>
+                <button type="button" class="swatch" style="--swatch:#9ba6b5" data-shell="shell-gray" data-color-name="Cinza" aria-label="Cinza" aria-pressed="false"></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="specs-info">
+            <div class="spec-block reveal" style="--delay:.08s">
+              <span class="spec-label">DIMENSÕES</span>
+              <div class="spec-numbers"><div><strong>50</strong><span>cm de largura</span></div><div><strong>8</strong><span>cm de altura</span></div><div><strong>12</strong><span>cm de profundidade</span></div></div>
+            </div>
+            <div class="spec-block reveal" style="--delay:.12s">
+              <span class="spec-label">INDICAÇÃO DE STATUS</span>
+              <div class="status-list">
+                <div><span class="status-led led-blue"></span><div><strong>Aguardando</strong><span>Sem identificação</span></div></div>
+                <div><span class="status-led led-green"></span><div><strong>Acesso liberado</strong><span>Aluno identificado</span></div></div>
+                <div><span class="status-led led-red"></span><div><strong>Alerta</strong><span>Acesso não autorizado</span></div></div>
+              </div>
+            </div>
+            <div class="spec-block reveal" style="--delay:.16s">
+              <span class="spec-label">ACOMPANHA O KIT</span>
+              <ul class="package-list">
+                <li><svg class="icon"><use href="#i-check"/></svg> Dispositivo FaceClass Scan</li>
+                <li><svg class="icon"><use href="#i-check"/></svg> Suporte de fixação</li>
+                <li><svg class="icon"><use href="#i-check"/></svg> Fonte de alimentação</li>
+                <li><svg class="icon"><use href="#i-check"/></svg> Manual do usuário</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section contact-section" id="contato">
+      <div class="contact-glow" aria-hidden="true"></div>
+      <div class="shell contact-layout">
+        <div class="contact-copy">
+          <p class="eyebrow eyebrow-dark reveal"><span class="eyebrow-dot"></span> Próximo passo</p>
+          <h2 class="reveal" style="--delay:.05s">Pronto para uma entrada<br><span class="text-blue">mais inteligente?</span></h2>
+          <p class="section-intro reveal" style="--delay:.1s">Conte um pouco sobre a sua escola. Vamos mostrar como a FaceClass Scan pode simplificar a rotina da sua equipe.</p>
+          <div class="contact-badges reveal" style="--delay:.16s">
+            <div><span class="feature-icon"><svg class="icon"><use href="#i-tools"/></svg></span><span><strong>Instalação acompanhada</strong><small>Do primeiro dia ao suporte.</small></span></div>
+            <div><span class="feature-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Privacidade em primeiro lugar</strong><small>Dados tratados com responsabilidade.</small></span></div>
+          </div>
+          <div class="contact-direct reveal" style="--delay:.2s">
+            <a href="mailto:contato@faceclass.com.br"><svg class="icon"><use href="#i-mail"/></svg> contato@faceclass.com.br</a>
+            <span><svg class="icon"><use href="#i-pin"/></svg> Atendimento em todo o Brasil</span>
+          </div>
+        </div>
+
+        <form class="contact-form reveal" id="contactForm" style="--delay:.12s" novalidate>
+          <div class="form-head"><span class="form-kicker">SOLICITAR DEMONSTRAÇÃO</span><h3>Vamos conversar?</h3><p>Preencha os dados e nossa equipe entra em contato.</p></div>
+          <div class="field-row">
+            <label class="field">Nome<input type="text" name="nome" id="leadName" placeholder="Seu nome" autocomplete="name" required /></label>
+            <label class="field">Escola<input type="text" name="escola" id="leadSchool" placeholder="Nome da escola" autocomplete="organization" required /></label>
+          </div>
+          <label class="field">E-mail<input type="email" name="email" id="leadEmail" placeholder="voce@escola.com.br" autocomplete="email" required /></label>
+          <label class="field">WhatsApp<input type="tel" name="whatsapp" id="leadWhatsapp" placeholder="(11) 98765-4321" autocomplete="tel" inputmode="tel" required /></label>
+          <label class="field">Quantos alunos aproximadamente?<select name="alunos" id="leadStudents"><option value="">Selecione</option><option>Até 200</option><option>200 a 500</option><option>500 a 1.000</option><option>Mais de 1.000</option></select></label>
+          <button class="button button-primary button-large form-submit" type="submit">Solicitar demonstração <svg class="icon icon-sm"><use href="#i-arrow"/></svg></button>
+          <p class="form-note" id="formNote">Demonstração de interface. Os dados ficam salvos neste navegador.</p>
+          <div class="form-success" id="formSuccess" role="status" aria-live="polite" hidden>
+            <span class="form-success-icon"><svg class="icon"><use href="#i-check"/></svg></span>
+            <div><strong>Solicitação registrada!</strong><p>Obrigado, <span id="successName">professor(a)</span>. Em uma versão conectada, nossa equipe entraria em contato pelo WhatsApp informado.</p></div>
+          </div>
+        </form>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="shell footer-top">
+      <a class="brand" href="#topo" aria-label="FaceClass Scan, início">
+        <span class="brand-mark" aria-hidden="true"><svg viewBox="0 0 64 72" focusable="false"><path d="M32 3.5 58 13v19.5c0 17-10.6 28.4-26 35.5C16.6 60.9 6 49.5 6 32.5V13L32 3.5Z" fill="none" stroke="currentColor" stroke-width="2.6"/><path d="M18 24v-4.5A3.5 3.5 0 0 1 21.5 16H26M38 16h4.5a3.5 3.5 0 0 1 3.5 3.5V24M18 48v4.5a3.5 3.5 0 0 0 3.5 3.5H26M38 56h4.5a3.5 3.5 0 0 0 3.5-3.5V48" fill="none" stroke="#35b8ff" stroke-width="2.6" stroke-linecap="round"/><circle cx="32" cy="31" r="6.2" fill="none" stroke="currentColor" stroke-width="2.4"/><path d="M24.5 45c1.1-4 3.6-6 7.5-6s6.4 2 7.5 6" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/></svg></span>
+        <span class="brand-word">FaceClass <b>Scan</b></span>
+      </a>
+      <p>Reconhecimento que conecta alunos e escola.</p>
+      <div class="footer-links"><a href="#produto">Produto</a><a href="#recursos">Recursos</a><a href="#demo">Demonstração</a><a href="#contato">Contato</a></div>
+    </div>
+    <div class="shell footer-bottom"><span>© 2026 FaceClass Scan. Todos os direitos reservados.</span><span>Projeto conceitual · Interface demonstrativa</span></div>
+  </footer>
+
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
+</body>
+</html>
