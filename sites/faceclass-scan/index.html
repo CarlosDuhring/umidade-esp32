@@ -79,6 +79,41 @@
     <symbol id="i-download" viewBox="0 0 24 24">
       <path d="M12 3v12M7 10l5 5 5-5M4 21h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
     </symbol>
+    <symbol id="i-camera" viewBox="0 0 24 24">
+      <path d="M4 8h3l1.4-2h7.2L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <circle cx="12" cy="13" r="3.2" fill="none" stroke="currentColor" stroke-width="1.7"/>
+    </symbol>
+    <symbol id="i-close" viewBox="0 0 24 24">
+      <path d="m6 6 12 12M18 6 6 18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-refresh" viewBox="0 0 24 24">
+      <path d="M20 7v5h-5M4 17v-5h5M6.1 9a7 7 0 0 1 11.7-2L20 12M4 12l2.2 5a7 7 0 0 0 11.7-2" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-menu" viewBox="0 0 24 24">
+      <path d="M4 7h16M4 12h16M4 17h16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-home" viewBox="0 0 24 24">
+      <path d="m3.5 10 8.5-6.5 8.5 6.5V20a1 1 0 0 1-1 1h-5v-6h-5v6h-5a1 1 0 0 1-1-1v-10Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+    </symbol>
+    <symbol id="i-user" viewBox="0 0 24 24">
+      <circle cx="12" cy="8" r="3.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M4.8 20c.6-3.7 3-5.5 7.2-5.5s6.6 1.8 7.2 5.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-file" viewBox="0 0 24 24">
+      <path d="M6 3h8l4 4v14H6V3Z" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/>
+      <path d="M14 3v5h4M9 12h6M9 16h6" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-search" viewBox="0 0 24 24">
+      <circle cx="10.5" cy="10.5" r="6.5" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="m15.5 15.5 4.5 4.5" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-info" viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="9" fill="none" stroke="currentColor" stroke-width="1.7"/>
+      <path d="M12 11v5M12 8h.01" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+    </symbol>
+    <symbol id="i-back" viewBox="0 0 24 24">
+      <path d="M19 12H5M11 6l-6 6 6 6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+    </symbol>
   </svg>
 
   <div class="scroll-progress" aria-hidden="true"></div>
@@ -102,6 +137,7 @@
         <a href="#recursos">Recursos</a>
         <a href="#como-funciona">Como funciona</a>
         <a href="#demo">Demonstração</a>
+        <a href="#app">App</a>
         <a href="#painel">Painel</a>
         <a href="#especificacoes">Especificações</a>
         <a class="mobile-nav-cta" href="#contato">Solicitar demonstração <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
@@ -328,13 +364,13 @@
             <p class="eyebrow eyebrow-light reveal"><span class="eyebrow-dot"></span> Experimente agora</p>
             <h2 class="reveal" style="--delay:.05s">Veja o reconhecimento<br><span class="text-cyan">acontecer.</span></h2>
           </div>
-          <p class="section-intro reveal" style="--delay:.1s">Escolha uma ação e acompanhe o fluxo completo: leitura facial, status do equipamento e notificação no celular do professor.</p>
+          <p class="section-intro reveal" style="--delay:.1s">Abra a câmera e veja a leitura facial acontecer de verdade. Ou use o simulador para percorrer o fluxo completo no painel e no celular do professor.</p>
         </div>
 
         <div class="demo-shell">
-          <div class="simulator reveal" style="--delay:.08s">
+          <div class="simulator reveal reveal-left" style="--delay:.08s">
             <div class="sim-topbar">
-              <span class="live-label"><span class="status-dot"></span> SIMULADOR AO VIVO</span>
+              <span class="live-label"><span class="status-dot"></span> LEITOR AO VIVO</span>
               <span class="sim-clock" id="simClock">07:32</span>
             </div>
             <div class="sim-stage">
@@ -357,11 +393,15 @@
                 </div>
               </div>
             </div>
-            <div class="sim-controls" aria-label="Simular ações de entrada">
-              <button class="button button-primary sim-button" type="button" data-action="entry"><svg class="icon"><use href="#i-door"/></svg> Simular entrada</button>
+            <div class="sim-controls" aria-label="Testar a leitura facial">
+              <button class="button button-primary sim-button sim-button-camera" type="button" data-camera-open>
+                <svg class="icon"><use href="#i-camera"/></svg> Testar com a câmera <span class="sim-real-tag">REAL</span>
+              </button>
+              <button class="button button-glass sim-button" type="button" data-action="entry"><svg class="icon"><use href="#i-door"/></svg> Simular entrada</button>
               <button class="button button-glass sim-button" type="button" data-action="exit"><svg class="icon"><use href="#i-logout"/></svg> Simular saída</button>
               <button class="button button-alert sim-button" type="button" data-action="alert"><svg class="icon"><use href="#i-alert"/></svg> Simular alerta</button>
             </div>
+            <p class="sim-camera-note"><svg class="icon"><use href="#i-shield"/></svg> A câmera é processada localmente no seu navegador. Nenhuma imagem é enviada.</p>
             <div class="sim-log">
               <div class="sim-log-head"><span>ÚLTIMAS ATIVIDADES</span><span id="simLogCount">3 eventos</span></div>
               <div class="sim-log-list" id="simLogList" aria-live="polite">
@@ -372,7 +412,7 @@
             </div>
           </div>
 
-          <div class="demo-phone-wrap reveal" style="--delay:.16s">
+          <div class="demo-phone-wrap reveal reveal-right" style="--delay:.16s">
             <div class="demo-phone">
               <div class="phone-notch"></div>
               <div class="phone-screen app-screen">
@@ -416,6 +456,220 @@
       </div>
     </section>
 
+    <section class="section app-tour-section" id="app">
+      <div class="app-tour-bg" aria-hidden="true"></div>
+      <div class="shell">
+        <div class="app-tour">
+          <div class="app-tour-left">
+            <div class="section-head app-tour-head">
+              <div>
+                <p class="eyebrow eyebrow-dark reveal"><span class="eyebrow-dot"></span> O app do professor</p>
+                <h2 class="reveal" style="--delay:.05s">A escola na palma<br><span class="text-blue">da mão.</span></h2>
+              </div>
+              <p class="section-intro reveal" style="--delay:.1s">As mesmas telas que acompanham a rotina da sala, agora na sua mão. Role para navegar pelo app e ver cada detalhe.</p>
+            </div>
+
+            <div class="app-steps" aria-label="Telas do app do professor">
+            <button class="app-step is-active" type="button" data-app-step="home" aria-pressed="true" aria-controls="appViewHome">
+              <span class="app-step-index">01</span>
+              <span class="app-step-copy">
+                <span class="app-step-title">Visão geral</span>
+                <span class="app-step-text">Status do sistema, presença da turma e últimas atividades em uma abertura rápida.</span>
+              </span>
+              <span class="app-step-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+            </button>
+            <button class="app-step" type="button" data-app-step="alunos" aria-pressed="false" aria-controls="appViewAlunos">
+              <span class="app-step-index">02</span>
+              <span class="app-step-copy">
+                <span class="app-step-title">Alunos</span>
+                <span class="app-step-text">Lista da turma com entrada registrada e status de presença sempre atualizado.</span>
+              </span>
+              <span class="app-step-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+            </button>
+            <button class="app-step" type="button" data-app-step="notificacoes" aria-pressed="false" aria-controls="appViewNotificacoes">
+              <span class="app-step-index">03</span>
+              <span class="app-step-copy">
+                <span class="app-step-title">Notificações</span>
+                <span class="app-step-text">Entradas, saídas e alertas chegam no celular em tempo real, sem interromper a aula.</span>
+              </span>
+              <span class="app-step-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+            </button>
+            <button class="app-step" type="button" data-app-step="relatorios" aria-pressed="false" aria-controls="appViewRelatorios">
+              <span class="app-step-index">04</span>
+              <span class="app-step-copy">
+                <span class="app-step-title">Relatórios</span>
+                <span class="app-step-text">Frequência da semana e resumo da turma em uma visão clara para a coordenação.</span>
+              </span>
+              <span class="app-step-arrow" aria-hidden="true"><svg class="icon"><use href="#i-arrow"/></svg></span>
+            </button>
+            <div class="app-tour-cta reveal" style="--delay:.08s">
+              <span>Quer ver a versão completa?</span>
+              <a class="text-link" href="#painel">Abrir painel do professor <svg class="icon icon-sm"><use href="#i-arrow"/></svg></a>
+            </div>
+            </div>
+          </div>
+
+          <div class="app-tour-visual reveal reveal-scale" style="--delay:.08s">
+            <span class="app-tour-halo" aria-hidden="true"></span>
+            <div class="app-float app-float-status">
+              <span class="app-float-icon is-green"><svg class="icon"><use href="#i-check"/></svg></span>
+              <div><strong>Sistema ativo</strong><span>Recebendo leituras</span></div>
+            </div>
+            <div class="app-float app-float-notif">
+              <span class="app-float-icon is-blue"><svg class="icon"><use href="#i-bell"/></svg></span>
+              <div><strong>Notificação em tempo real</strong><span>Direto no celular</span></div>
+            </div>
+
+            <div class="app-stage-phone">
+              <span class="app-stage-notch" aria-hidden="true"></span>
+              <div class="app-stage-screen">
+                <div class="app-view is-active" id="appViewHome" data-app-view="home">
+                  <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons"><i></i><i></i><i></i></span></div>
+                  <header class="mobile-appbar mobile-home-topbar">
+                    <span class="mobile-topbar-icon"><svg class="icon"><use href="#i-menu"/></svg></span>
+                    <span class="mobile-wordmark"><span class="tiny-logo">F</span>FaceClass</span>
+                    <span class="mobile-bell"><svg class="icon"><use href="#i-bell"/></svg><b>2</b></span>
+                  </header>
+                  <div class="mobile-greeting">
+                    <span class="mobile-user-avatar"><svg class="icon"><use href="#i-user"/></svg></span>
+                    <div><strong>Olá, Professora Júlia!</strong><span>Colégio Saber <b>⌄</b></span></div>
+                  </div>
+                  <div class="mobile-body mobile-home-body">
+                    <div class="mobile-system-card">
+                      <span class="mobile-system-check"><svg class="icon"><use href="#i-check"/></svg></span>
+                      <div><strong>Sistema ativo</strong><span>Reconhecimento facial funcionando normalmente.</span></div>
+                    </div>
+                    <div class="mobile-stats">
+                      <div class="mobile-stat-card"><span class="mstat-icon is-blue"><svg class="icon"><use href="#i-users"/></svg></span><strong>25</strong><span>Alunos</span></div>
+                      <div class="mobile-stat-card"><span class="mstat-icon is-green"><svg class="icon"><use href="#i-check"/></svg></span><strong>22</strong><span>Presentes</span></div>
+                      <div class="mobile-stat-card"><span class="mstat-icon is-red"><svg class="icon"><use href="#i-alert"/></svg></span><strong>3</strong><span>Ausentes</span></div>
+                      <div class="mobile-stat-card"><span class="mstat-icon is-navy"><svg class="icon"><use href="#i-chart"/></svg></span><strong>88%</strong><span>Frequência</span></div>
+                    </div>
+                    <div class="mobile-last-card">
+                      <div class="mobile-card-head"><strong>Últimas atividades</strong><span>Ver todas →</span></div>
+                      <div class="mobile-activity">
+                        <span class="mini-avatar avatar-ana">AC</span>
+                        <div><strong>Ana Clara</strong><span>Entrada · 07:12</span></div>
+                        <span class="mobile-pill is-present">Presente</span>
+                      </div>
+                      <div class="mobile-activity">
+                        <span class="mini-avatar avatar-pedro">PH</span>
+                        <div><strong>Pedro Henrique</strong><span>Entrada · 07:08</span></div>
+                        <span class="mobile-pill is-present">Presente</span>
+                      </div>
+                    </div>
+                  </div>
+                  <nav class="mobile-tabbar" aria-label="Navegação do app">
+                    <span class="is-on"><svg class="icon"><use href="#i-home"/></svg><small>Início</small></span>
+                    <span class="has-badge"><svg class="icon"><use href="#i-bell"/></svg><small>Notificações</small><b>2</b></span>
+                    <span><svg class="icon"><use href="#i-file"/></svg><small>Relatórios</small></span>
+                    <span><svg class="icon"><use href="#i-user"/></svg><small>Perfil</small></span>
+                  </nav>
+                </div>
+
+                <div class="app-view" id="appViewAlunos" data-app-view="alunos">
+                  <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons"><i></i><i></i><i></i></span></div>
+                  <header class="mobile-appbar mobile-titlebar"><svg class="icon"><use href="#i-back"/></svg><strong>Alunos</strong><span></span></header>
+                  <div class="mobile-body mobile-students-body">
+                    <label class="mobile-search"><svg class="icon"><use href="#i-search"/></svg><span>Buscar aluno...</span></label>
+                    <div class="mobile-list-head"><span>25 alunos · sala 101</span><b>22 presentes</b></div>
+                    <div class="mobile-student-list">
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-ana">AC</span><div><strong>Ana Clara</strong><span>Entrada · 07:12</span></div><span class="mobile-pill is-present">Presente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-pedro">PH</span><div><strong>Pedro Henrique</strong><span>Entrada · 07:08</span></div><span class="mobile-pill is-present">Presente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-mari">MS</span><div><strong>Mariana Souza</strong><span>Sem registro hoje</span></div><span class="mobile-pill is-absent">Ausente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-lucas">LG</span><div><strong>Lucas Gabriel</strong><span>Entrada · 07:16</span></div><span class="mobile-pill is-present">Presente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-isa">IC</span><div><strong>Isabela Costa</strong><span>Entrada · 07:20</span></div><span class="mobile-pill is-present">Presente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-thiago">TM</span><div><strong>Thiago Martins</strong><span>Entrada · 07:24</span></div><span class="mobile-pill is-present">Presente</span></div>
+                      <div class="mobile-student-row"><span class="mobile-avatar avatar-bea">BL</span><div><strong>Beatriz Lima</strong><span>Entrada · 07:26</span></div><span class="mobile-pill is-present">Presente</span></div>
+                    </div>
+                  </div>
+                  <nav class="mobile-tabbar" aria-label="Navegação do app">
+                    <span class="is-on"><svg class="icon"><use href="#i-home"/></svg><small>Início</small></span>
+                    <span class="has-badge"><svg class="icon"><use href="#i-bell"/></svg><small>Notificações</small><b>2</b></span>
+                    <span><svg class="icon"><use href="#i-file"/></svg><small>Relatórios</small></span>
+                    <span><svg class="icon"><use href="#i-user"/></svg><small>Perfil</small></span>
+                  </nav>
+                </div>
+
+                <div class="app-view" id="appViewNotificacoes" data-app-view="notificacoes">
+                  <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons"><i></i><i></i><i></i></span></div>
+                  <header class="mobile-appbar mobile-titlebar"><svg class="icon"><use href="#i-back"/></svg><strong>Notificações</strong><svg class="icon"><use href="#i-settings"/></svg></header>
+                  <div class="mobile-body mobile-notif-body">
+                    <div class="mobile-notif-tabs"><span class="is-active">Todas</span><span>Entradas</span><span>Saídas</span><span>Alertas</span></div>
+                    <div class="mobile-notif-list">
+                      <article class="mobile-notif is-alert">
+                        <span class="mobile-notif-icon"><svg class="icon"><use href="#i-alert"/></svg></span>
+                        <div><strong>Alerta de presença</strong><p>Aluno não identificado na entrada da sala 102.</p></div><time>10:24</time>
+                      </article>
+                      <article class="mobile-notif is-entry">
+                        <span class="mobile-notif-icon"><svg class="icon"><use href="#i-check"/></svg></span>
+                        <div><strong>Entrada confirmada</strong><p>Maria Silva entrou na sala 101.</p></div><time>10:22</time>
+                      </article>
+                      <article class="mobile-notif is-exit">
+                        <span class="mobile-notif-icon"><svg class="icon"><use href="#i-logout"/></svg></span>
+                        <div><strong>Saída confirmada</strong><p>João Pereira saiu da sala 101.</p></div><time>10:15</time>
+                      </article>
+                      <article class="mobile-notif is-system">
+                        <span class="mobile-notif-icon"><svg class="icon"><use href="#i-info"/></svg></span>
+                        <div><strong>Aviso do sistema</strong><p>Manutenção programada às 22h.</p></div><time>09:50</time>
+                      </article>
+                    </div>
+                  </div>
+                  <nav class="mobile-tabbar" aria-label="Navegação do app">
+                    <span><svg class="icon"><use href="#i-home"/></svg><small>Início</small></span>
+                    <span class="is-on has-badge"><svg class="icon"><use href="#i-bell"/></svg><small>Notificações</small><b>2</b></span>
+                    <span><svg class="icon"><use href="#i-file"/></svg><small>Relatórios</small></span>
+                    <span><svg class="icon"><use href="#i-user"/></svg><small>Perfil</small></span>
+                  </nav>
+                </div>
+
+                <div class="app-view" id="appViewRelatorios" data-app-view="relatorios">
+                  <div class="mobile-statusbar"><span>9:41</span><span class="mobile-status-icons"><i></i><i></i><i></i></span></div>
+                  <header class="mobile-appbar mobile-titlebar"><svg class="icon"><use href="#i-back"/></svg><strong>Relatórios</strong><span></span></header>
+                  <div class="mobile-body mobile-report-body">
+                    <div class="mobile-report-date"><svg class="icon"><use href="#i-file"/></svg> Este mês <b>⌄</b></div>
+                    <div class="mobile-report-card">
+                      <span class="mobile-report-kicker">Frequência média da turma</span>
+                      <div class="mobile-report-value">88% <b>↑ +2%</b></div>
+                      <svg class="mobile-chart" viewBox="0 0 246 76" aria-label="Frequência em alta durante o mês">
+                        <defs>
+                          <linearGradient id="reportArea" x1="0" y1="0" x2="0" y2="1">
+                            <stop offset="0" stop-color="#3d9bff" stop-opacity=".28"/>
+                            <stop offset="1" stop-color="#3d9bff" stop-opacity="0"/>
+                          </linearGradient>
+                        </defs>
+                        <path d="M2 58 40 47 78 56 116 33 154 41 192 17 244 10V76H2Z" fill="url(#reportArea)"/>
+                        <path class="mobile-chart-line" d="M2 58 40 47 78 56 116 33 154 41 192 17 244 10" fill="none" stroke="#2f8dff" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+                        <circle cx="2" cy="58" r="3" fill="#2f8dff"/><circle cx="40" cy="47" r="3" fill="#2f8dff"/><circle cx="78" cy="56" r="3" fill="#2f8dff"/><circle cx="116" cy="33" r="3" fill="#2f8dff"/><circle cx="154" cy="41" r="3" fill="#2f8dff"/><circle cx="192" cy="17" r="3" fill="#2f8dff"/><circle cx="244" cy="10" r="3" fill="#2f8dff"/>
+                      </svg>
+                      <div class="mobile-chart-labels"><span>Sem 1</span><span>Sem 2</span><span>Sem 3</span><span>Sem 4</span></div>
+                    </div>
+                    <div class="mobile-report-summary">
+                      <div class="mobile-card-head"><strong>Resumo geral</strong><span>Hoje</span></div>
+                      <div class="mobile-summary-grid"><div><strong>25</strong><span>Alunos</span></div><div><strong>22</strong><span>Presentes</span></div><div><strong>3</strong><span>Faltas</span></div></div>
+                    </div>
+                    <button class="mobile-report-btn" type="button"><svg class="icon"><use href="#i-file"/></svg> Ver relatório completo</button>
+                  </div>
+                  <nav class="mobile-tabbar" aria-label="Navegação do app">
+                    <span><svg class="icon"><use href="#i-home"/></svg><small>Início</small></span>
+                    <span class="has-badge"><svg class="icon"><use href="#i-bell"/></svg><small>Notificações</small><b>2</b></span>
+                    <span class="is-on"><svg class="icon"><use href="#i-file"/></svg><small>Relatórios</small></span>
+                    <span><svg class="icon"><use href="#i-user"/></svg><small>Perfil</small></span>
+                  </nav>
+                </div>
+              </div>
+            </div>
+
+            <div class="app-tour-meta">
+              <span id="appTourLabel">Visão geral</span>
+              <span class="app-tour-dots" aria-hidden="true"><i class="is-active" data-app-dot="home"></i><i data-app-dot="alunos"></i><i data-app-dot="notificacoes"></i><i data-app-dot="relatorios"></i></span>
+              <span><b id="appTourCount">01</b> / 04</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
     <section class="section dashboard-section" id="painel">
       <div class="shell">
         <div class="section-head split-head">
@@ -426,7 +680,7 @@
           <p class="section-intro reveal" style="--delay:.1s">Presenças, ausências, frequência e últimas atividades em uma interface direta — para o professor e para a coordenação.</p>
         </div>
 
-        <div class="dashboard-frame reveal" style="--delay:.1s">
+        <div class="dashboard-frame reveal reveal-scale" style="--delay:.1s">
           <aside class="dash-sidebar">
             <div class="dash-logo"><span class="tiny-logo">F</span><span>FaceClass</span></div>
             <nav class="dash-nav" aria-label="Painel de demonstração">
@@ -537,8 +791,8 @@
         </div>
 
         <div class="specs-layout">
-          <div class="specs-product reveal" style="--delay:.05s">
-            <div class="spec-product-stage">
+          <div class="specs-product reveal reveal-left" style="--delay:.05s">
+            <div class="spec-product-stage" data-parallax=".18">
               <span class="spec-ambient" aria-hidden="true"></span>
               <div class="spec-device shell-black" id="specDevice">
                 <span class="device-highlight" aria-hidden="true"></span>
@@ -604,7 +858,7 @@
           </div>
         </div>
 
-        <form class="contact-form reveal" id="contactForm" style="--delay:.12s" novalidate>
+        <form class="contact-form reveal reveal-right" id="contactForm" style="--delay:.12s" novalidate>
           <div class="form-head"><span class="form-kicker">SOLICITAR DEMONSTRAÇÃO</span><h3>Vamos conversar?</h3><p>Preencha os dados e nossa equipe entra em contato.</p></div>
           <div class="field-row">
             <label class="field">Nome<input type="text" name="nome" id="leadName" placeholder="Seu nome" autocomplete="name" required /></label>
@@ -635,6 +889,76 @@
     </div>
     <div class="shell footer-bottom"><span>© 2026 FaceClass Scan. Todos os direitos reservados.</span><span>Projeto conceitual · Interface demonstrativa</span></div>
   </footer>
+
+  <dialog class="camera-dialog" id="cameraDialog" aria-labelledby="cameraTitle" aria-describedby="cameraIntro">
+    <div class="camera-panel">
+      <div class="camera-head">
+        <div>
+          <span class="camera-kicker"><i class="camera-kicker-dot"></i> TESTE REAL · MVP</span>
+          <h2 id="cameraTitle">Leitura facial ao vivo</h2>
+        </div>
+        <button class="camera-close" type="button" id="cameraClose" aria-label="Fechar teste da câmera"><svg class="icon"><use href="#i-close"/></svg></button>
+      </div>
+      <p class="camera-intro" id="cameraIntro">Abra a câmera, centralize o rosto e acompanhe a leitura acontecer no seu dispositivo. Nesta demonstração, validamos a presença do rosto — nenhuma imagem é enviada.</p>
+
+      <div class="camera-layout">
+        <div class="camera-visual">
+          <div class="camera-feed" id="cameraFeed">
+            <video id="cameraVideo" autoplay muted playsinline></video>
+            <canvas id="cameraCanvas" aria-hidden="true"></canvas>
+            <div class="camera-corners" aria-hidden="true"><i></i><i></i><i></i><i></i></div>
+            <span class="camera-scanline" id="cameraScanline" aria-hidden="true"></span>
+            <div class="camera-feed-top"><span><i class="camera-live-dot"></i> Câmera</span><span id="cameraFeedLabel">Aguardando</span></div>
+            <div class="camera-placeholder" id="cameraPlaceholder">
+              <span class="camera-placeholder-icon"><svg class="icon"><use href="#i-camera"/></svg></span>
+              <strong>A câmera ainda não está ativa</strong>
+              <span>Clique em “Abrir câmera” para começar.</span>
+            </div>
+            <div class="camera-loading" id="cameraLoading" hidden>
+              <span class="camera-spinner" aria-hidden="true"></span>
+              <strong>Preparando a leitura facial…</strong>
+              <span>Carregando o modelo de detecção no navegador.</span>
+            </div>
+            <div class="camera-success-flash" aria-hidden="true"></div>
+          </div>
+          <div class="camera-feed-meta">
+            <span id="cameraFeedStatus"><i class="camera-meta-dot"></i> Aguardando câmera</span>
+            <span id="cameraConfidence">Confiança —</span>
+          </div>
+        </div>
+
+        <aside class="camera-side">
+          <div class="camera-status-card">
+            <span class="camera-side-kicker">STATUS DA LEITURA</span>
+            <strong id="cameraStatusTitle" aria-live="polite">Pronto para começar</strong>
+            <p id="cameraStatusText">Permita o acesso à câmera e mantenha o rosto dentro do quadro.</p>
+            <div class="camera-progress" id="cameraProgress" role="progressbar" aria-label="Progresso da leitura facial" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="cameraProgressBar"></i></div>
+            <span class="camera-progress-label" id="cameraProgressLabel">0%</span>
+          </div>
+
+          <ul class="camera-checks">
+            <li id="cameraCheckDevice"><span class="camera-check-icon"><svg class="icon"><use href="#i-camera"/></svg></span><span><b>Câmera</b><small>Aguardando permissão</small></span></li>
+            <li id="cameraCheckFace"><span class="camera-check-icon"><svg class="icon"><use href="#i-face"/></svg></span><span><b>Rosto no quadro</b><small>Centralize o rosto</small></span></li>
+            <li id="cameraCheckRead"><span class="camera-check-icon"><svg class="icon"><use href="#i-check"/></svg></span><span><b>Leitura facial</b><small>Pronta para validar</small></span></li>
+          </ul>
+
+          <div class="camera-actions">
+            <button class="button button-primary camera-main-action" type="button" id="cameraStart"><svg class="icon"><use href="#i-camera"/></svg> Abrir câmera</button>
+            <button class="button button-glass camera-main-action" type="button" id="cameraRetry" hidden><svg class="icon"><use href="#i-refresh"/></svg> Tentar novamente</button>
+            <button class="button button-glass camera-secondary-action" type="button" id="cameraAgain" hidden><svg class="icon"><use href="#i-refresh"/></svg> Ler novamente</button>
+            <button class="button button-quiet camera-secondary-action" type="button" id="cameraStop"><svg class="icon"><use href="#i-close"/></svg> Fechar</button>
+          </div>
+
+          <p class="camera-privacy"><svg class="icon"><use href="#i-shield"/></svg> Processamento local no navegador. Nenhuma imagem ou biometria é armazenada.</p>
+        </aside>
+      </div>
+
+      <div class="camera-footnote">
+        <span><b>Dica:</b> use uma luz frontal e mantenha o rosto a cerca de 50 cm da câmera.</span>
+        <span>Modelo de detecção facial via MediaPipe · funciona melhor no Chrome, Edge e Safari atualizados.</span>
+      </div>
+    </div>
+  </dialog>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
