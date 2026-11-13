@@ -127,7 +127,7 @@ if (refreshDemo) refreshDemo.addEventListener('click', updateDemo);
 updateDemo();
 setInterval(() => {
   if (!document.hidden) updateDemo();
-}, 2000);
+}, 1000);
 document.addEventListener('visibilitychange', () => {
   if (!document.hidden) updateDemo();
 });

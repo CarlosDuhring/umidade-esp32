@@ -26,6 +26,14 @@ The public prototype readings are stored separately in `prototype_readings`, so 
 - The schema includes sensor ownership and readings; per-user ESP32 ingestion must use a device key and server-side service-role credential before connecting real user sensors.
 - Old sensor readings can be removed by running the optional `server/supabase/schedule_retention.sql` setup after the schema. The cleanup function is not executable by anon/authenticated clients.
 
+## Update latency
+
+- The ESP32 sends one reading per second (`INTERVALO_ENVIO = 1000` in `firmware/umidade_wifi/umidade_wifi.ino`).
+- The public demo, landing page, and authenticated plant dashboard refresh every 1 s.
+- End-to-end latency is typically about 1–2.5 s. It is not absolute instant: Wi-Fi, TLS to Render, Supabase write time, and browser polling all add delay.
+- Shortening the interval increases Wi-Fi, Render, and Supabase load. For a single prototype, 1 s is a practical “near real-time” setting; below that, test stability and Supabase usage first.
+- The firmware change only takes effect after recompiling and flashing the ESP32. The web polling changes only take effect after the server code is deployed to Render.
+
 ## Deploy
 
 Render does not receive any Supabase key from source control. Configure the three variables in the Render service dashboard, then manually deploy the GitHub commit. The current public demonstration endpoint remains `/api/status`; the original ESP32 ingestion remains `/api/readings` with the existing `API_KEY`.

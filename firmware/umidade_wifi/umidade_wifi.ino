@@ -27,7 +27,7 @@
 const int PINO_SENSOR = 34;   // ADC1 - funciona junto com o WiFi
 const int LED_STATUS = 2;     // LED azul da placa (GPIO 2)
 
-const unsigned long INTERVALO_ENVIO = 2000;     // 1 leitura a cada 2 s (quase em tempo real)
+const unsigned long INTERVALO_ENVIO = 1000;     // 1 leitura por segundo (tempo quase real)
 const unsigned long INTERVALO_RECONEXAO = 15000;
 
 unsigned long ultimoEnvio = 0;
@@ -111,25 +111,21 @@ bool conectarWifi(unsigned long timeoutPorRede = 15000) {
 }
 
 // ------------------------------------------------------------
-bool enviarLeitura(int adc) {
-  if (WiFi.status() != WL_CONNECTED) {
-    Serial.println("Sem WiFi, leitura nao enviada.");
-    return false;
-  }
+// Conexao HTTP/TLS persistente: evita handshake a cada leitura.
+HTTPClient http;
+WiFiClient clienteSimples;
+WiFiClientSecure clienteSeguro;
+bool httpPronto = false;
 
-  String url = SERVIDOR_URL;
-  String corpo = "{\"adc\":" + String(adc) +
-                 ",\"device\":\"" + String(DISPOSITIVO) + "\"" +
-                 ",\"rssi\":" + String(WiFi.RSSI()) + "}";
+bool iniciarHttp() {
+  if (httpPronto) return true;
 
-  HTTPClient http;
-  WiFiClient clienteSimples;
-  WiFiClientSecure clienteSeguro;
-
-  http.setConnectTimeout(5000);
-  http.setTimeout(5000);
+  http.setConnectTimeout(2500);
+  http.setTimeout(2500);
+  http.setReuse(true);
 
   bool iniciou;
+  String url = SERVIDOR_URL;
   if (url.startsWith("https://")) {
     clienteSeguro.setInsecure();  // sem validar certificado (simples e suficiente aqui)
     iniciou = http.begin(clienteSeguro, url);
@@ -149,15 +145,33 @@ bool enviarLeitura(int adc) {
   http.addHeader("x-api-key", API_KEY);
 #endif
 
+  httpPronto = true;
+  return true;
+}
+
+bool enviarLeitura(int adc) {
+  if (WiFi.status() != WL_CONNECTED) {
+    Serial.println("Sem WiFi, leitura nao enviada.");
+    httpPronto = false;
+    return false;
+  }
+
+  if (!iniciarHttp()) return false;
+
+  String corpo = "{\"adc\":" + String(adc) +
+                 ",\"device\":\"" + String(DISPOSITIVO) + "\"" +
+                 ",\"rssi\":" + String(WiFi.RSSI()) + "}";
+
   int codigo = http.POST(corpo);
 
   if (codigo > 0) {
     Serial.printf("POST %d | resposta: %s\n", codigo, http.getString().c_str());
   } else {
     Serial.printf("Falha no POST: %s\n", http.errorToString(codigo).c_str());
+    http.end();
+    httpPronto = false;
   }
 
-  http.end();
   return codigo == 200;
 }
 
@@ -199,8 +213,9 @@ void loop() {
     Serial.printf("ADC: %d\n", adc);
 
     bool ok = enviarLeitura(adc);
-    piscar(ok ? 2 : 5);
+    // Sucesso: um piscar curto. Falha: tres piscares para diagnostico.
+    piscar(ok ? 1 : 3, ok ? 30 : 60);
   }
 
-  delay(200);
+  delay(50);
 }

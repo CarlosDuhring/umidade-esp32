@@ -1,9 +1,10 @@
 const $ = (id) => document.getElementById(id);
 
-const INTERVALO_MS = 2000;
+const INTERVALO_MS = 1000; // demo quase em tempo real (ESP envia a cada 1 s)
 let grafico = null;
 let graficoVisivel = false;
 let ultimaLeituraTs = null;
+let atualizando = false;
 
 const CORES = {
   ok: '#16a34a',
@@ -136,6 +137,8 @@ function desenharGrafico(historico) {
 }
 
 async function atualizar() {
+  if (atualizando) return;
+  atualizando = true;
   try {
     const resposta = await fetch('/api/status?limit=120', { cache: 'no-store' });
     if (!resposta.ok) throw new Error(`HTTP ${resposta.status}`);
@@ -173,13 +176,20 @@ async function atualizar() {
     console.error('Falha ao buscar dados:', erro);
     pintarPill('offline', 'Servidor fora');
     $('advice').textContent = 'Não consegui falar com o servidor. Tentando de novo…';
+  } finally {
+    atualizando = false;
   }
 }
 
 $('refresh').addEventListener('click', atualizar);
 
 atualizar();
-setInterval(atualizar, INTERVALO_MS);
+setInterval(() => {
+  if (!document.hidden) atualizar();
+}, INTERVALO_MS);
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden) atualizar();
+});
 
 // Atualiza o relogio a cada segundo sem bater no servidor
 setInterval(atualizarRelogio, 1000);
